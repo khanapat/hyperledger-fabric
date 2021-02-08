@@ -1,0 +1,148 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ordererorg-orderer1
+  labels:
+    app: blockchain
+  namespace: blockchain
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      name: ordererorg-orderer1
+      app: blockchain
+  template:
+    metadata:
+      labels:
+        name: ordererorg-orderer1
+        app: blockchain
+    spec:
+      volumes:
+      - name: orderer-data
+        emptyDir: {}
+        # persistentVolumeClaim:
+        #   claimName: orderer1-pvc
+      - name: msp
+        secret:
+          secretName: ordererorg-orderer1-ca-crypto
+          items:
+          - key: admincert.pem
+            path: admincerts/admincert.pem
+          - key: cacert.pem
+            path: cacerts/cacert.pem
+          - key: cert.pem
+            path: signcerts/cert.pem
+          - key: key
+            path: keystore/key
+          - key: tlscacert.pem
+            path: tlscacerts/tlscacert.pem
+      - name: tls
+        secret:
+          secretName: ordererorg-orderer1-tlsca-crypto
+      - name: genesis
+        configMap: 
+          name: ordererorg-genesis
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: ibm-cloud.kubernetes.io/worker-id
+                operator: In
+                values:
+                - kube-boe4bt5t09sb8c63dq40-sitktbscfcl-default-0000015a
+      containers:
+      - name: orderer
+        image: hyperledger/fabric-orderer:2.2.1
+        command: ["orderer"]
+        env:
+        - name: ORDERER_GENERAL_LEDGERTYPE
+          value: file
+        - name: ORDERER_FILELEDGER_LOCATION
+          value: /var/hyperledger/production/orderer
+        - name: ORDERER_GENERAL_BATCHTIMEOUT
+          value: 1s
+        - name: ORDERER_GENERAL_BATCHSIZE_MAXMESSAGECOUNT
+          value: "10"
+        - name: ORDERER_GENERAL_MAXWINDOWSIZE
+          value: "1000"
+        - name: ORDERER_GENERAL_LISTENADDRESS
+          value: 0.0.0.0
+        - name: FABRIC_LOGGING_SPEC
+          value: info
+        - name: ORDERER_GENERAL_LOCALMSPDIR
+          value: /crypto/msp
+        - name: ORDERER_GENERAL_LOCALMSPID
+          value: OrdererMSP
+        - name: ORDERER_GENERAL_GENESISMETHOD
+          value: file
+        - name: ORDERER_GENERAL_GENESISFILE
+          value: /data/genesis.block
+        - name: ORDERER_GENERAL_GENESISPROFILE
+          value: initial
+        - name: ORDERER_GENERAL_TLS_ENABLED
+          value: "true"
+        - name: ORDERER_GENERAL_TLS_PRIVATEKEY
+          value: /crypto/tls/server.key
+        - name: ORDERER_GENERAL_TLS_CERTIFICATE
+          value: /crypto/tls/server.crt
+        - name: ORDERER_GENERAL_TLS_ROOTCAS
+          value: /crypto/tls/ca.crt
+        - name: ORDERER_GENERAL_CLUSTER_CLIENTCERTIFICATE
+          value: /crypto/tls/server.crt     
+        - name: ORDERER_GENERAL_CLUSTER_CLIENTPRIVATEKEY
+          value: /crypto/tls/server.key 
+        - name: ORDERER_GENERAL_CLUSTER_ROOTCAS
+          value: /crypto/tls/ca.crt
+        - name: ORDERER_OPERATIONS_LISTENADDRESS
+          value: 0.0.0.0:8443
+        - name: ORDERER_METRICS_PROVIDER
+          value: prometheus
+        ports:
+         - containerPort: 7050
+           protocol: TCP
+         - containerPort: 8443
+           protocol: TCP
+        volumeMounts:
+        - mountPath: /var/hyperledger/production/orderer
+          name: orderer-data
+        - mountPath: /crypto/msp/
+          name: msp
+          readOnly: true
+        - mountPath: /crypto/tls/
+          name: tls
+          readOnly: true
+        - mountPath: /data
+          name: genesis
+        readinessProbe:
+          httpGet:
+            path: /healthz
+            port: 8443
+          initialDelaySeconds: 2
+          timeoutSeconds: 5
+          periodSeconds: 5
+          failureThreshold: 10
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ordererorg-orderer1
+  labels:
+    app: blockchain
+    run: ordererorg-orderer1
+  namespace: blockchain
+spec:
+  type: NodePort
+  selector:
+    name: ordererorg-orderer1
+  ports:
+  - protocol: TCP
+    nodePort: 31010
+    targetPort: 7050
+    port: 7050
+    name: grpc
+  - protocol: TCP
+    nodePort: 31011
+    targetPort: 8443
+    port: 8443
+    name: operations

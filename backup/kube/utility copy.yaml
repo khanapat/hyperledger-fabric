@@ -23,6 +23,20 @@ spec:
         path: keystore/key
       - key: tlscacert.pem
         path: tlscacerts/tlscacert.pem
+  - name: admin-org2
+    secret:
+      secretName: admin-org2-crypto
+      items:
+      - key: admincert.pem
+        path: admincerts/admincert.pem
+      - key: cacert.pem
+        path: cacerts/cacert.pem
+      - key: cert.pem
+        path: signcerts/cert.pem
+      - key: key
+        path: keystore/key
+      - key: tlscacert.pem
+        path: tlscacerts/tlscacert.pem
   - name: admin-ordererorg
     secret:
       secretName: admin-ordererorg-crypto
@@ -40,6 +54,9 @@ spec:
   - name: org1-peer1-tls
     secret:
       secretName: org1-peer1-tlsca-crypto
+  - name: org2-peer1-tls
+    secret:
+      secretName: org2-peer1-tlsca-crypto
   - name: ordererorg-orderer1-tls
     secret:
       secretName: ordererorg-orderer1-tlsca-crypto
@@ -55,6 +72,9 @@ spec:
   - name: channel1-anchorpeer-org1
     configMap: 
       name: channel1-anchorpeer-org1
+  - name: channel1-anchorpeer-org2
+    configMap: 
+      name: channel1-anchorpeer-org2
   containers:
   - name: util
     image: hyperledger/fabric-tools:2.2.1
@@ -100,11 +120,17 @@ spec:
     - mountPath: /crypto/org1/users/Admin@org1/msp
       name: admin-org1
       readOnly: true
+    - mountPath: /crypto/org2/users/Admin@org2/msp
+      name: admin-org2
+      readOnly: true
     - mountPath: /crypto/ordererorg/users/Admin@ordererorg/msp
       name: admin-ordererorg
       readOnly: true
     - mountPath: /crypto/org1/peers/org1-peer1/tls
       name: org1-peer1-tls
+      readOnly: true
+    - mountPath: /crypto/org2/peers/org2-peer1/tls
+      name: org2-peer1-tls
       readOnly: true
     - mountPath: /crypto/ordererorg/orderers/ordererorg-orderer1/tls
       name: ordererorg-orderer1-tls
@@ -119,5 +145,7 @@ spec:
       name: channel1-genesis
     - mountPath: /anchorpeers/org1
       name: channel1-anchorpeer-org1
+    - mountPath: /anchorpeers/org2
+      name: channel1-anchorpeer-org2
     - mountPath: /tmp
       name: tmp

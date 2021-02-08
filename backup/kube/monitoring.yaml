@@ -1,0 +1,206 @@
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: prometheus
+  namespace: blockchain
+rules:
+- apiGroups: [""]
+  resources:
+  - nodes
+  - services
+  - endpoints
+  - pods
+  verbs: ["get", "list", "watch"]
+- apiGroups: [""]
+  resources:
+  - configmaps
+  verbs: ["get"]
+- nonResourceURLs: ["/metrics"]
+  verbs: ["get"]
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: prometheus
+  namespace: blockchain
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: prometheus
+  namespace: blockchain
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: prometheus
+subjects:
+- kind: ServiceAccount
+  name: prometheus
+  namespace: blockchain
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: prometheus-cm
+  namespace: blockchain
+data:
+  prometheus.yaml: |-
+    global:
+      scrape_interval: 10s
+      scrape_timeout: 10s
+    scrape_configs:
+      - job_name: 'blockchain'
+        honor_timestamps: true
+        scrape_interval: 10s
+        scrape_timeout: 10s
+        metrics_path: /metrics
+        scheme: http
+        kubernetes_sd_configs:
+        - role: service
+        relabel_configs:
+        # keep targets with label __meta_kubernetes_service_label_app equals 'blockchain',
+        # which means the user added app:blockchain in the service's label.
+        - action: keep
+          source_labels: [__meta_kubernetes_service_label_app]
+          regex: blockchain
+        # keep targets with __meta_kubernetes_service_port_name equals 'operations',
+        # which means the user added name:operations in the service's port.
+        - source_labels: [__meta_kubernetes_service_port_name]
+          separator: ;
+          regex: operations
+          replacement: $1
+          action: keep
+        # adds a label called 'service' 
+        # if __meta_kubernetes_service_name matches .*, put its value in label 'service'
+        - source_labels: [__meta_kubernetes_service_name]
+          separator: ;
+          regex: (.*)
+          target_label: service
+          replacement: $1
+          action: replace
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: prometheus
+  labels:
+    run: prometheus
+  namespace: blockchain
+spec:
+  type: NodePort
+  selector:
+    name: prometheus
+  ports:
+  - name: promui
+    protocol: TCP
+    port: 9090
+    targetPort: 9090
+    nodePort: 30882
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: prometheus
+  labels:
+    name: prometheus
+  namespace: blockchain
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      name: prometheus
+  template:
+    metadata:
+      labels:
+        name: prometheus
+    spec:
+      serviceAccountName: prometheus
+      containers:
+      - name: prom
+        image: prom/prometheus:v2.20.1
+        command: ["prometheus"]
+        args: ["--config.file=/etc/prometheus/prometheus.yaml", "--web.enable-admin-api", "--web.enable-lifecycle"]
+        volumeMounts:
+          - name: config-volume
+            mountPath: /etc/prometheus/prometheus.yaml
+            subPath: prometheus.yaml
+        ports:
+        - containerPort: 9090
+      volumes:
+        - name: config-volume
+          configMap:
+           name: prometheus-cm
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: grafana
+  labels:
+    name: grafana
+  namespace: blockchain
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      name: grafana
+  template:
+    metadata:
+      labels:
+        name: grafana
+    spec:
+      containers:
+        - image: grafana/grafana:6.4.1
+          name: grafana
+          ports:
+            - containerPort: 3000
+              protocol: TCP
+          volumeMounts:
+            - mountPath: /var/lib/grafana
+              name: data
+            - mountPath: /etc/grafana/provisioning/datasources
+              name: grafana-datasources
+      restartPolicy: Always
+      volumes:
+        - emptyDir: {}
+          name: data
+        - name: grafana-datasources
+          configMap:
+            defaultMode: 420
+            name: datasource-fabric
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: grafana
+  labels:
+    run: grafana
+  namespace: blockchain
+spec:
+  type: NodePort
+  selector:
+    name: grafana
+  ports:
+  - name: grafanaui
+    protocol: TCP
+    port: 3000
+    targetPort: 3000
+    nodePort: 30883
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: datasource-fabric
+  namespace: blockchain
+data:
+  ibp.yaml: |-
+    apiVersion: 1
+    datasources:
+    - name: IBP
+      type: prometheus
+      access: proxy
+      orgId: 1
+      url: http://prometheus:9090
+      isDefault: true
+      version: 1
+      editable: true

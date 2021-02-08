@@ -71,4 +71,29 @@ PeerOrgs:
           - "localhost"
           - "128.168.74.108"
           - "128.168.74.104"
-          - "org1-peer2.blockchain.svc.cluster.local"
+          - org1-peer2.blockchain.svc.cluster.local"
+  - Name: Org2
+    Domain: org2
+    EnableNodeOUs: true
+
+    CA:
+      Hostname: ca
+      CommonName: org2ca
+
+    Specs:
+      - Hostname: org2-peer1
+        CommonName: "{{.Hostname}}"
+        SANS:
+          - "*.127.0.0.1.xip.io"
+          - "localhost"
+          - "128.168.74.108"
+          - "128.168.74.104"
+          - org2-peer1.blockchain.svc.cluster.local"
+      - Hostname: org2-peer2
+        CommonName: "{{.Hostname}}"
+        SANS:
+          - "*.127.0.0.1.xip.io"
+          - "localhost"
+          - "128.168.74.108"
+          - "128.168.74.104"
+          - "org2-peer2.blockchain.svc.cluster.local"

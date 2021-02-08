@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+ name: org1-ca-pvc
+ labels:
+   billingType: hourly
+ namespace: blockchain
+spec:
+ accessModes:
+   - ReadWriteMany
+ resources:
+   requests:
+     storage: 100Gi
+ storageClassName: ibmc-file-bronze

@@ -2,18 +2,18 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: org2-peer1-config
+  name: org1-peer1-config
   namespace: blockchain
 data:
   core.yaml: |
     peer:
         # The peer id provides a name for this peer instance and is used when
         # naming docker resources.
-        id: org2-peer1
+        id: org1-peer1
 
         # The networkId allows for logical separation of networks and is used when
         # naming docker resources.
-        networkId: nid2
+        networkId: nid1
 
         # The Address at local network interface this Peer will listen on.
         # By default, it will listen on all network interfaces
@@ -28,13 +28,13 @@ data:
         # If this is not specified, the chaincodeListenAddress address is selected.
         # And if chaincodeListenAddress is not specified, address is selected from
         # peer listenAddress.
-        # chaincodeAddress: 0.0.0.0:7052
+        # chaincodeAddress:  0.0.0.0:7052
 
         # When used as peer config, this represents the endpoint to other peers
         # in the same organization. For peers in other organization, see
         # gossip.externalEndpoint for more info.
         # When used as CLI config, this means the peer's endpoint to interact with
-        address: org2-peer1:7051
+        address: org1-peer1:7051
 
         # Whether the Peer should programmatically determine its address
         # This case is useful for docker containers.
@@ -80,7 +80,7 @@ data:
             # Important: The endpoints here have to be endpoints of peers in the same
             # organization, because the peer would refuse connecting to these endpoints
             # unless they are in the same organization as the peer.
-            bootstrap: org2-peer1:7051
+            bootstrap: org1-peer1:7051
 
             # NOTE: orgLeader and useLeaderElection parameters are mutual exclusive.
             # Setting both to true would result in the termination of the peer
@@ -106,7 +106,7 @@ data:
             # Overrides the endpoint that the peer publishes to peers
             # in its organization. For peers in foreign organizations
             # see 'externalEndpoint'
-            endpoint: org2-peer1:7051
+            endpoint: org1-peer1:7051
             # Maximum count of blocks stored in memory
             maxBlockCountToStore: 100
             # Max time between consecutive message pushes(unit: millisecond)
@@ -156,7 +156,7 @@ data:
             reconnectInterval: 25s
             # This is an endpoint that is published to peers outside of the organization.
             # If this isn't set, the peer will not be known to other organizations.
-            externalEndpoint: org2-peer1:7051
+            externalEndpoint: org1-peer1.blockchain.svc.cluster.local:7051 # org1-peer1.blockchain.svc.cluster.local, org1-peer1:7051
             # Leader election service configuration
             election:
                 # Longest time peer waits for stable membership during leader election startup (unit: second)
@@ -317,7 +317,7 @@ data:
         # to match the name of one of the MSPs in each of the channel
         # that this peer is a member of. Otherwise this peer's messages
         # will not be identified as valid by other nodes.
-        localMspId: Org2MSP
+        localMspId: Org1MSP
 
         # CLI common client config options
         client:

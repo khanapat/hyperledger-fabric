@@ -73,9 +73,9 @@ echo ""
 echo "=> RUN_CHAINCODE: Install ${CHAINCODE_NAME}_${CHAINCODE_VERSION} on org1-peer1"
 kubectl exec utility-pod -n blockchain -- sh -c "CORE_PEER_LOCALMSPID=Org1MSP CORE_PEER_ADDRESS=org1-peer1:7051 CORE_PEER_TLS_ROOTCERT_FILE=/crypto/org1/peers/org1-peer1/tls/ca.crt CORE_PEER_TLS_ENABLED=true peer lifecycle chaincode install /tmp/${CHAINCODE_NAME}_${CHAINCODE_VERSION}.tar.gz"
 
-echo ""
-echo "=> RUN_CHAINCODE: Install ${CHAINCODE_NAME}_${CHAINCODE_VERSION} on org2-peer1"
-kubectl exec utility-pod -n blockchain -- sh -c "CORE_PEER_LOCALMSPID=Org2MSP CORE_PEER_ADDRESS=org2-peer1:7051 CORE_PEER_TLS_ROOTCERT_FILE=/crypto/org2/peers/org2-peer1/tls/ca.crt CORE_PEER_TLS_ENABLED=true CORE_PEER_MSPCONFIGPATH=/crypto/org2/users/Admin@org2/msp peer lifecycle chaincode install /tmp/${CHAINCODE_NAME}_${CHAINCODE_VERSION}.tar.gz"
+# echo ""
+# echo "=> RUN_CHAINCODE: Install ${CHAINCODE_NAME}_${CHAINCODE_VERSION} on org2-peer1"
+# kubectl exec utility-pod -n blockchain -- sh -c "CORE_PEER_LOCALMSPID=Org2MSP CORE_PEER_ADDRESS=org2-peer1:7051 CORE_PEER_TLS_ROOTCERT_FILE=/crypto/org2/peers/org2-peer1/tls/ca.crt CORE_PEER_TLS_ENABLED=true CORE_PEER_MSPCONFIGPATH=/crypto/org2/users/Admin@org2/msp peer lifecycle chaincode install /tmp/${CHAINCODE_NAME}_${CHAINCODE_VERSION}.tar.gz"
 
 echo ""
 echo "=> RUN_CHAINCODE: Query ${CHAINCODE_NAME}_${CHAINCODE_VERSION} on org1-peer1"
@@ -89,9 +89,9 @@ echo ""
 echo "=> RUN_CHAINCODE: Approve ${CHAINCODE_NAME}_${CHAINCODE_VERSION} for Org1MSP"
 kubectl exec utility-pod -n blockchain -- sh -c "CORE_PEER_LOCALMSPID=Org1MSP CORE_PEER_MSPCONFIGPATH=/crypto/org1/users/Admin@org1/msp peer lifecycle chaincode approveformyorg -o ordererorg-orderer1:7050 --tls --cafile /crypto/ordererorg/orderers/ordererorg-orderer1/tls/ca.crt -C ${CHANNEL_NAME} -n ${CHAINCODE_NAME} -v ${CHAINCODE_VERSION} --channel-config-policy /Channel/Application/Endorsement --package-id $PID --sequence $SEQUENCE"
 
-echo ""
-echo "=> RUN_CHAINCODE: Approve ${CHAINCODE_NAME}_${CHAINCODE_VERSION} for Org2MSP"
-kubectl exec utility-pod -n blockchain -- sh -c "CORE_PEER_LOCALMSPID=Org2MSP CORE_PEER_MSPCONFIGPATH=/crypto/org2/users/Admin@org2/msp CORE_PEER_ADDRESS=org2-peer1:7051 CORE_PEER_TLS_ROOTCERT_FILE=/crypto/org2/peers/org2-peer1/tls/ca.crt CORE_PEER_TLS_ENABLED=true peer lifecycle chaincode approveformyorg -o ordererorg-orderer1:7050 --tls --cafile /crypto/ordererorg/orderers/ordererorg-orderer1/tls/ca.crt -C ${CHANNEL_NAME} -n ${CHAINCODE_NAME} -v ${CHAINCODE_VERSION} --channel-config-policy /Channel/Application/Endorsement --package-id $PID --sequence $SEQUENCE"
+# echo ""
+# echo "=> RUN_CHAINCODE: Approve ${CHAINCODE_NAME}_${CHAINCODE_VERSION} for Org2MSP"
+# kubectl exec utility-pod -n blockchain -- sh -c "CORE_PEER_LOCALMSPID=Org2MSP CORE_PEER_MSPCONFIGPATH=/crypto/org2/users/Admin@org2/msp CORE_PEER_ADDRESS=org2-peer1:7051 CORE_PEER_TLS_ROOTCERT_FILE=/crypto/org2/peers/org2-peer1/tls/ca.crt CORE_PEER_TLS_ENABLED=true peer lifecycle chaincode approveformyorg -o ordererorg-orderer1:7050 --tls --cafile /crypto/ordererorg/orderers/ordererorg-orderer1/tls/ca.crt -C ${CHANNEL_NAME} -n ${CHAINCODE_NAME} -v ${CHAINCODE_VERSION} --channel-config-policy /Channel/Application/Endorsement --package-id $PID --sequence $SEQUENCE"
 
 echo ""
 echo "=> RUN_CHAINCODE: Check ${CHAINCODE_NAME}_${CHAINCODE_VERSION} commit readiness"
@@ -100,7 +100,7 @@ kubectl exec utility-pod -n blockchain -- sh -c "CORE_PEER_LOCALMSPID=Org1MSP CO
 echo ""
 echo "=> RUN_CHAINCODE: Commit ${CHAINCODE_NAME}_${CHAINCODE_VERSION}"
 sleep 5
-kubectl exec utility-pod -n blockchain -- sh -c "CORE_PEER_LOCALMSPID=Org1MSP CORE_PEER_MSPCONFIGPATH=/crypto/org1/users/Admin@org1/msp peer lifecycle chaincode commit --peerAddresses org1-peer1:7051 --peerAddresses org2-peer1:7051 --tlsRootCertFiles /crypto/org1/peers/org1-peer1/tls/ca.crt --tlsRootCertFiles /crypto/org2/peers/org2-peer1/tls/ca.crt -o ordererorg-orderer1:7050 --tls --cafile /crypto/ordererorg/orderers/ordererorg-orderer1/tls/ca.crt -C ${CHANNEL_NAME} -n ${CHAINCODE_NAME} -v ${CHAINCODE_VERSION} --channel-config-policy /Channel/Application/Endorsement --sequence $SEQUENCE"
+kubectl exec utility-pod -n blockchain -- sh -c "CORE_PEER_LOCALMSPID=Org1MSP CORE_PEER_MSPCONFIGPATH=/crypto/org1/users/Admin@org1/msp peer lifecycle chaincode commit --peerAddresses org1-peer1:7051 --tlsRootCertFiles /crypto/org1/peers/org1-peer1/tls/ca.crt -o ordererorg-orderer1:7050 --tls --cafile /crypto/ordererorg/orderers/ordererorg-orderer1/tls/ca.crt -C ${CHANNEL_NAME} -n ${CHAINCODE_NAME} -v ${CHAINCODE_VERSION} --channel-config-policy /Channel/Application/Endorsement --sequence $SEQUENCE"
 
 echo ""
 echo "=> RUN_CHAINCODE: Query committed chaincode"
@@ -110,7 +110,7 @@ kubectl exec utility-pod -n blockchain -- sh -c "CORE_PEER_LOCALMSPID=Org1MSP CO
 echo ""
 echo "=> RUN_CHAINCODE: Invoking ${CHAINCODE_NAME}_${CHAINCODE_VERSION}"
 sleep 5
-kubectl exec utility-pod -n blockchain -- sh -c "CORE_PEER_LOCALMSPID=Org1MSP CORE_PEER_MSPCONFIGPATH=/crypto/org1/users/Admin@org1/msp peer chaincode invoke --peerAddresses org1-peer1:7051 --peerAddresses org2-peer1:7051 --tlsRootCertFiles /crypto/org1/peers/org1-peer1/tls/ca.crt --tlsRootCertFiles /crypto/org2/peers/org2-peer1/tls/ca.crt -o ordererorg-orderer1:7050 --tls --cafile /crypto/ordererorg/orderers/ordererorg-orderer1/tls/ca.crt -C ${CHANNEL_NAME} -n ${CHAINCODE_NAME} -c '{\"function\":\"initLedger\",\"Args\":[]}'"
+kubectl exec utility-pod -n blockchain -- sh -c "CORE_PEER_LOCALMSPID=Org1MSP CORE_PEER_MSPCONFIGPATH=/crypto/org1/users/Admin@org1/msp peer chaincode invoke --peerAddresses org1-peer1:7051 --tlsRootCertFiles /crypto/org1/peers/org1-peer1/tls/ca.crt --tls --cafile /crypto/ordererorg/orderers/ordererorg-orderer1/tls/ca.crt -C ${CHANNEL_NAME} -n ${CHAINCODE_NAME} -c '{\"function\":\"initLedger\",\"Args\":[]}'"
 
 echo ""
 echo "=> RUN_CHAINCODE: Querying ${CHAINCODE_NAME}:${CHAINCODE_VERSION}"

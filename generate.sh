@@ -50,8 +50,8 @@ cp crypto-config/ordererOrganizations/ordererorg/users/Admin@ordererorg/msp/sign
 cp crypto-config/peerOrganizations/org1/users/Admin@org1/msp/signcerts/Admin@org1-cert.pem \
  crypto-config/peerOrganizations/org1/msp/admincerts
 
-cp crypto-config/peerOrganizations/org2/users/Admin@org2/msp/signcerts/Admin@org2-cert.pem \
- crypto-config/peerOrganizations/org2/msp/admincerts
+# cp crypto-config/peerOrganizations/org2/users/Admin@org2/msp/signcerts/Admin@org2-cert.pem \
+#  crypto-config/peerOrganizations/org2/msp/admincerts
 
 configtxgen -profile OrdererGenesis -outputBlock orderer.block -channelID testchainid
 configtxgen -profile Channel -outputCreateChannelTx ${CHANNEL_NAME}.tx -channelID ${CHANNEL_NAME}
@@ -66,9 +66,9 @@ configtxgen -profile Channel \
     -outputAnchorPeersUpdate ./$GENERATED_FOLDER/configtx/Org1MSPanchors.tx \
     -channelID $CHANNEL_NAME -asOrg Org1MSP
 
-configtxgen -profile Channel \
-    -outputAnchorPeersUpdate ./$GENERATED_FOLDER/configtx/Org2MSPanchors.tx \
-    -channelID $CHANNEL_NAME -asOrg Org2MSP
+# configtxgen -profile Channel \
+#     -outputAnchorPeersUpdate ./$GENERATED_FOLDER/configtx/Org2MSPanchors.tx \
+#     -channelID $CHANNEL_NAME -asOrg Org2MSP
 
 mv crypto-config ./$GENERATED_FOLDER/
 

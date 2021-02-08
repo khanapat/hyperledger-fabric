@@ -5,7 +5,7 @@ metadata:
   labels:
     name: blockchain-api
   name: blockchain-api
-  namespace: blockchain # blockchain, default
+  namespace: blockchain # guarantor-api, blockchain, default
 spec:
   selector:
     matchLabels:

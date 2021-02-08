@@ -16,8 +16,9 @@ kubectl create cm ordererorg-genesis --from-file=genesis.block=${GENERATED_FOLDE
 kubectl create cm ${CHANNEL_NAME}-genesis --from-file=${CHANNEL_NAME}.block=${GENERATED_FOLDER}/configtx/${CHANNEL_NAME}.tx -n blockchain
 
 kubectl create cm ${CHANNEL_NAME}-anchorpeer-org1 --from-file=Org1MSPanchors.tx=${GENERATED_FOLDER}/configtx/Org1MSPanchors.tx -n blockchain
+kubectl create cm ${CHANNEL_NAME}-anchorpeer-org2 --from-file=Org2MSPanchors.tx=${GENERATED_FOLDER}/configtx/Org2MSPanchors.tx -n blockchain
 
-ORGS="ordererorg org1"
+ORGS="ordererorg org1 org2"
 for o in $ORGS
 do
 	if [ "$o" == "ordererorg" ]; then
@@ -88,8 +89,17 @@ kubectl exec utility-pod -n blockchain \
  -- sh -c 'peer channel fetch config -o ${ORDERER_URL} -c ${CHANNEL_NAME} --tls --cafile ${ORDERER_CA_TLS} && peer channel join -b ${CHANNEL_NAME}_config.block'
 
 echo ""
+echo "=> CREATE_BLOCKCHAIN: Join Channel on Org2 Peer1"
+kubectl exec utility-pod -n blockchain -- sh -c 'CORE_PEER_LOCALMSPID=Org2MSP CORE_PEER_MSPCONFIGPATH=/crypto/org2/users/Admin@org2/msp CORE_PEER_TLS_ROOTCERT_FILE=/crypto/org2/peers/org2-peer1/tls/ca.crt CORE_PEER_ADDRESS=org2-peer1:7051 peer channel join -b ${CHANNEL_NAME}_config.block'
+
+echo ""
 echo "=> CREATE_BLOCKCHAIN: Update Anchor Peer for Org1MSP"
 kubectl exec utility-pod -n blockchain \
  -- sh -c 'peer channel update -o ${ORDERER_URL} -c ${CHANNEL_NAME} --tls --cafile ${ORDERER_CA_TLS} -f /anchorpeers/org1/Org1MSPanchors.tx'
+
+echo ""
+echo "=> CREATE_BLOCKCHAIN: Update Anchor Peer for Org2MSP"
+kubectl exec utility-pod -n blockchain \
+ -- sh -c 'CORE_PEER_LOCALMSPID=Org2MSP CORE_PEER_MSPCONFIGPATH=/crypto/org2/users/Admin@org2/msp CORE_PEER_TLS_ROOTCERT_FILE=/crypto/org2/peers/org2-peer1/tls/ca.crt CORE_PEER_ADDRESS=org2-peer1:7051 peer channel update -o ${ORDERER_URL} -c ${CHANNEL_NAME} --tls --cafile ${ORDERER_CA_TLS} -f /anchorpeers/org2/Org2MSPanchors.tx'
 
 echo "Done!!"

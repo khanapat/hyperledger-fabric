@@ -9,14 +9,15 @@ kubectl delete cm ordererorg-genesis -n blockchain
 kubectl delete cm ${CHANNEL_NAME}-genesis -n blockchain
 
 kubectl delete cm ${CHANNEL_NAME}-anchorpeer-org1 -n blockchain
+kubectl delete cm ${CHANNEL_NAME}-anchorpeer-org2 -n blockchain
 
-ORGS="ordererorg org1"
+ORGS="ordererorg org1 org2"
 for o in $ORGS
 do
 	if [ "$o" == "ordererorg" ]; then
 		F="ordererOrganizations"
 		G="orderers"
-		C="orderer1 orderer2 orderer3"
+		C="orderer1 orderer2"
 	else
 		F="peerOrganizations"
 		G="peers"
