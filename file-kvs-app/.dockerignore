@@ -1,0 +1,12 @@
+node_modules
+npm-debug.log
+Dockerfile
+.dockerignore
+.git
+.gitignore
+test
+.eslintrc
+./travis.yml
+.npmrc
+.env
+# config/*.json

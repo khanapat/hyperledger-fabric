@@ -1,0 +1,30 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    name: blockchain-api
+  name: blockchain-api
+  namespace: blockchain # blockchain, default
+spec:
+  selector:
+    matchLabels:
+      name: blockchain-api
+  strategy:
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        name: blockchain-api
+    spec:
+      containers:
+      - name: blockchain-api
+        image: jp.icr.io/test-ktb-scf/blockchain-api:1
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 8080
+          name: web
+          protocol: TCP

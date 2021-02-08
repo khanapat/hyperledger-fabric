@@ -1,0 +1,151 @@
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: utility-pod
+  namespace: blockchain
+spec:
+  restartPolicy: "Never"
+  volumes:
+  - name: tmp
+    emptyDir: {}
+  - name: admin-org1
+    secret:
+      secretName: admin-org1-crypto
+      items:
+      - key: admincert.pem
+        path: admincerts/admincert.pem
+      - key: cacert.pem
+        path: cacerts/cacert.pem
+      - key: cert.pem
+        path: signcerts/cert.pem
+      - key: key
+        path: keystore/key
+      - key: tlscacert.pem
+        path: tlscacerts/tlscacert.pem
+  - name: admin-org2
+    secret:
+      secretName: admin-org2-crypto
+      items:
+      - key: admincert.pem
+        path: admincerts/admincert.pem
+      - key: cacert.pem
+        path: cacerts/cacert.pem
+      - key: cert.pem
+        path: signcerts/cert.pem
+      - key: key
+        path: keystore/key
+      - key: tlscacert.pem
+        path: tlscacerts/tlscacert.pem
+  - name: admin-ordererorg
+    secret:
+      secretName: admin-ordererorg-crypto
+      items:
+      - key: admincert.pem
+        path: admincerts/admincert.pem
+      - key: cacert.pem
+        path: cacerts/cacert.pem
+      - key: cert.pem
+        path: signcerts/cert.pem
+      - key: key
+        path: keystore/key
+      - key: tlscacert.pem
+        path: tlscacerts/tlscacert.pem
+  - name: org1-peer1-tls
+    secret:
+      secretName: org1-peer1-tlsca-crypto
+  - name: org2-peer1-tls
+    secret:
+      secretName: org2-peer1-tlsca-crypto
+  - name: ordererorg-orderer1-tls
+    secret:
+      secretName: ordererorg-orderer1-tlsca-crypto
+  - name: ordererorg-orderer2-tls
+    secret:
+      secretName: ordererorg-orderer2-tlsca-crypto
+  - name: ordererorg-orderer3-tls
+    secret:
+      secretName: ordererorg-orderer3-tlsca-crypto
+  - name: channel1-genesis
+    configMap: 
+      name: channel1-genesis
+  - name: channel1-anchorpeer-org1
+    configMap: 
+      name: channel1-anchorpeer-org1
+  - name: channel1-anchorpeer-org2
+    configMap: 
+      name: channel1-anchorpeer-org2
+  containers:
+  - name: util
+    image: hyperledger/fabric-tools:2.2.1
+    imagePullPolicy: IfNotPresent
+    command: [ "sh", "-c", "--" ]
+    args: [ "trap : TERM INT; sleep infinity & wait" ]
+    env:
+        - name: GOPATH
+          value: /go
+        - name: CHANNEL_NAME
+          value: channel1
+        - name: CHAINCODE_NAME
+          value: fabcar
+        - name: CHAINCODE_VERSION
+          value: "1"
+        - name: ORDERER_URL
+          value: ordererorg-orderer1:7050
+        - name: ORDERER_CA_TLS
+          value: /crypto/ordererorg/orderers/ordererorg-orderer1/tls/ca.crt
+        - name: CORE_PEER_ADDRESS
+          value: org1-peer1:7051
+        - name: CORE_PEER_TLS_ENABLED
+          value: "true"
+        - name: CORE_PEER_TLS_CERT_FILE
+          value: /crypto/org1/peers/org1-peer1/tls/server.crt
+        - name: CORE_PEER_TLS_KEY_FILE
+          value: /crypto/org1/peers/org1-peer1/tls/server.key
+        - name: CORE_PEER_TLS_ROOTCERT_FILE
+          value: /crypto/org1/peers/org1-peer1/tls/ca.crt
+        - name: CORE_PEER_LOCALMSPID
+          value: Org1MSP
+        - name: FABRIC_LOGGING_SPEC
+          value: info
+        - name: CORE_PEER_MSPCONFIGPATH
+          value: /crypto/org1/users/Admin@org1/msp
+        - name: FABRIC_CFG_PATH
+          value: /etc/hyperledger/fabric
+    resources:
+      limits:
+        memory: "128Mi"
+        cpu: "100m"
+    volumeMounts:
+    - mountPath: /crypto/org1/users/Admin@org1/msp
+      name: admin-org1
+      readOnly: true
+    - mountPath: /crypto/org2/users/Admin@org2/msp
+      name: admin-org2
+      readOnly: true
+    - mountPath: /crypto/ordererorg/users/Admin@ordererorg/msp
+      name: admin-ordererorg
+      readOnly: true
+    - mountPath: /crypto/org1/peers/org1-peer1/tls
+      name: org1-peer1-tls
+      readOnly: true
+    - mountPath: /crypto/org2/peers/org2-peer1/tls
+      name: org2-peer1-tls
+      readOnly: true
+    - mountPath: /crypto/ordererorg/orderers/ordererorg-orderer1/tls
+      name: ordererorg-orderer1-tls
+      readOnly: true
+    - mountPath: /crypto/ordererorg/orderers/ordererorg-orderer2/tls
+      name: ordererorg-orderer2-tls
+      readOnly: true
+    - mountPath: /crypto/ordererorg/orderers/ordererorg-orderer3/tls
+      name: ordererorg-orderer3-tls
+      readOnly: true
+    - mountPath: /data
+      name: channel1-genesis
+    - mountPath: /anchorpeers/org1
+      name: channel1-anchorpeer-org1
+    - mountPath: /anchorpeers/org2
+      name: channel1-anchorpeer-org2
+    - mountPath: /tmp
+      name: tmp

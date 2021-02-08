@@ -1,0 +1,16 @@
+.DS_Store
+crypto-config/
+crypto-config.tar.gz
+orderer.block
+*.tx
+kubeconfig
+bin*/
+core.yaml
+downloads/
+*.out
+vendor/
+pid.txt
+next_sequence.txt
+generated/
+.env
+ccp-*.json

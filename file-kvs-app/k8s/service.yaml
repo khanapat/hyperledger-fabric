@@ -1,0 +1,38 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: blockchain-api
+  namespace: blockchain # blockchain, default
+  labels:
+    run: blockchain-api
+spec:
+  type: ClusterIP
+  selector:
+    name: blockchain-api
+  ports:
+    - protocol: TCP
+      targetPort: 8080
+      port: 8080
+      name: web
+---
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: blockchain-api
+  namespace: blockchain # blockchain, default
+  annotations:
+    ingress.bluemix.net/redirect-to-https: "True"
+spec:
+  tls:
+    - hosts:
+        - blockchain-api.sit-ktb-scf-cluster-7d3f346a0de5a556f7c9c63cfa9406fe-0000.jp-tok.containers.appdomain.cloud
+      secretName: sit-ktb-scf-cluster-7d3f346a0de5a556f7c9c63cfa9406fe-0000
+  rules:
+    - host: blockchain-api.sit-ktb-scf-cluster-7d3f346a0de5a556f7c9c63cfa9406fe-0000.jp-tok.containers.appdomain.cloud
+      http:
+        paths:
+          - path: /
+            backend:
+              serviceName: blockchain-api
+              servicePort: 8080

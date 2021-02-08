@@ -1,0 +1,90 @@
+# ---------------------------------------------------------------------------
+# "OrdererOrgs" - Definition of organizations managing orderer nodes
+# ---------------------------------------------------------------------------
+OrdererOrgs:
+  # ---------------------------------------------------------------------------
+  # Orderer
+  # ---------------------------------------------------------------------------
+  - Name: Orderer
+    Domain: ordererorg
+    EnableNodeOUs: true
+
+    CA:
+      Hostname: ca
+      CommonName: ordererorgca
+
+    Specs:
+      - Hostname: ordererorg-orderer1
+        CommonName: "{{.Hostname}}"
+        SANS:
+          - "*.127.0.0.1.xip.io"
+          - "localhost"
+          - "128.168.78.50" # TOCHANGE: Add your worker node here (for free IKS cluster) or LoadBalancer IP
+          
+      - Hostname: ordererorg-orderer2
+        CommonName: "{{.Hostname}}"
+        SANS:
+          - "*.127.0.0.1.xip.io"
+          - "localhost"
+          - "128.168.78.50" # TOCHANGE: Add your worker node here (for free IKS cluster) or LoadBalancer IP
+
+      - Hostname: ordererorg-orderer3
+        CommonName: "{{.Hostname}}"
+        SANS:
+          - "*.127.0.0.1.xip.io"
+          - "localhost"
+          - "128.168.78.50" # TOCHANGE: Add your worker node here (for free IKS cluster) or LoadBalancer IP
+
+    Users:
+        Count: 2
+
+# ---------------------------------------------------------------------------
+# "PeerOrgs" - Definition of organizations managing peer nodes
+# ---------------------------------------------------------------------------
+PeerOrgs:
+
+  - Name: Org1
+    Domain: org1
+    EnableNodeOUs: true
+
+    CA:
+      Hostname: ca
+      CommonName: org1ca
+
+    Specs:
+      - Hostname: org1-peer1
+        CommonName: "{{.Hostname}}"
+        SANS:
+          - "*.127.0.0.1.xip.io"
+          - "localhost"
+          - "128.168.78.50" # TOCHANGE: Add your worker node here (for free IKS cluster) or LoadBalancer IP
+
+      - Hostname: org1-peer2
+        CommonName: "{{.Hostname}}"
+        SANS:
+          - "*.127.0.0.1.xip.io"
+          - "localhost"
+          - "128.168.78.50" # TOCHANGE: Add your worker node here (for free IKS cluster) or LoadBalancer IP
+
+  - Name: Org2
+    Domain: org2
+    EnableNodeOUs: true
+
+    CA:
+      Hostname: ca
+      CommonName: org2ca
+
+    Specs:
+      - Hostname: org2-peer1
+        CommonName: "{{.Hostname}}"
+        SANS:
+          - "*.127.0.0.1.xip.io"
+          - "localhost"
+          - "128.168.78.50" # TOCHANGE: Add your worker node here (for free IKS cluster) or LoadBalancer IP
+
+      - Hostname: org2-peer2
+        CommonName: "{{.Hostname}}"
+        SANS:
+          - "*.127.0.0.1.xip.io"
+          - "localhost"
+          - "128.168.78.50" # TOCHANGE: Add your worker node here (for free IKS cluster) or LoadBalancer IP
