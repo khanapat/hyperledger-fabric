@@ -3,7 +3,7 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: org1-peer1-config
-  namespace: blockchain
+  namespace: dscf
 data:
   core.yaml: |
     peer:
@@ -156,7 +156,7 @@ data:
             reconnectInterval: 25s
             # This is an endpoint that is published to peers outside of the organization.
             # If this isn't set, the peer will not be known to other organizations.
-            externalEndpoint: org1-peer1.blockchain.svc.cluster.local:7051 # org1-peer1.blockchain.svc.cluster.local, org1-peer1:7051
+            externalEndpoint: org1-peer1.dscf.svc.cluster.local:7051 # org1-peer1.dscf.svc.cluster.local, org1-peer1:7051
             # Leader election service configuration
             election:
                 # Longest time peer waits for stable membership during leader election startup (unit: second)
@@ -506,7 +506,7 @@ data:
             name:
 
         # Generic builder environment, suitable for most chaincode types
-        builder:  hyperledger/fabric-ccenv:2.2.1
+        builder:  kcskbcnd93.kcs:5000/hyperledger/fabric-ccenv:2.2.1
 
         # Enables/disables force pulling of the base docker images (listed below)
         # during user chaincode instantiation.
@@ -515,7 +515,7 @@ data:
 
         golang:
             # golang will never need more than baseos
-            runtime:  hyperledger/fabric-ccenv:2.2.1
+            runtime:  kcskbcnd93.kcs:5000/hyperledger/fabric-ccenv:2.2.1
 
             # whether or not golang chaincode should be linked dynamically
             dynamicLink: false
@@ -525,11 +525,11 @@ data:
             # tools added for java shim layer packaging.
             # This image is packed with shim layer libraries that are necessary
             # for Java chaincode runtime.
-            runtime: hyperledger/fabric-javaenv:2.2.1
+            runtime: kcskbcnd93.kcs:5000/hyperledger/fabric-javaenv:2.2.1
 
         node:
             # This is an image based on node:$(NODE_VER)-alpine
-            runtime: hyperledger/fabric-nodeenv:2.2.1
+            runtime: kcskbcnd93.kcs:5000/hyperledger/fabric-nodeenv:2.2.1
 
         # List of directories to treat as external builders and launchers for
         # chaincode. The external builder detection processing will iterate over the

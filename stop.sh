@@ -5,10 +5,10 @@ source .env
 CHANNEL_NAME=channel1
 
 echo "Deleting blockchain deployments"
-kubectl delete cm ordererorg-genesis -n blockchain
-kubectl delete cm ${CHANNEL_NAME}-genesis -n blockchain
+kubectl delete cm ordererorg-genesis -n dscf
+kubectl delete cm ${CHANNEL_NAME}-genesis -n dscf
 
-kubectl delete cm ${CHANNEL_NAME}-anchorpeer-org1 -n blockchain
+kubectl delete cm ${CHANNEL_NAME}-anchorpeer-org1 -n dscf
 
 ORGS="ordererorg org1"
 for o in $ORGS
@@ -24,22 +24,22 @@ do
 	fi
 
 	org_folder=${GENERATED_FOLDER}/crypto-config/${F}/${o}
-	kubectl delete secret ${o}-ca-crypto -n blockchain
-	kubectl delete secret admin-${o}-crypto -n blockchain
+	kubectl delete secret ${o}-ca-crypto -n dscf
+	kubectl delete secret admin-${o}-crypto -n dscf
 	
 	for c in $C
 	do
 		name=${o}-${c} 
-		kubectl delete secret ${name}-ca-crypto -n blockchain
+		kubectl delete secret ${name}-ca-crypto -n dscf
 
-		kubectl delete secret ${name}-tlsca-crypto -n blockchain
+		kubectl delete secret ${name}-tlsca-crypto -n dscf
 	done
 done
 
-kubectl delete -f kube/ca -n blockchain
-kubectl delete -f kube/orderer -n blockchain
-kubectl delete -f kube/peer -n blockchain
-kubectl delete -f kube/utility.yaml -n blockchain
-kubectl delete -f kube/namespace.yaml
+kubectl delete -f kube/ca -n dscf
+kubectl delete -f kube/orderer -n dscf
+kubectl delete -f kube/peer -n dscf
+kubectl delete -f kube/utility.yaml -n dscf
+# kubectl delete -f kube/namespace.yaml
 
 echo "All blockchain deployments & services & namespace have been removed"

@@ -5,7 +5,7 @@ metadata:
   name: org2-peer1
   labels:
     app: blockchain
-  namespace: blockchain
+  namespace: dscf
 spec:
   replicas: 1
   selector:
@@ -58,7 +58,7 @@ spec:
                 - kube-boe4bt5t09sb8c63dq40-sitktbscfcl-default-00000299
       containers:
       - name: peer
-        image: hyperledger/fabric-peer:2.2.1
+        image: kcskbcnd93.kcs:5000/hyperledger/fabric-peer:2.2.1
         # Copy external chaincode builder and create symbolic links
         env:
         - name: FABRIC_LOGGING_SPEC
@@ -132,7 +132,7 @@ metadata:
   labels:
     app: blockchain
     run: org2-peer1
-  namespace: blockchain
+  namespace: dscf
 spec:
   type: NodePort
   selector:

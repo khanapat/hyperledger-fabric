@@ -4,7 +4,7 @@ metadata:
   name: ordererorg-orderer2
   labels:
     app: blockchain
-  namespace: blockchain
+  namespace: dscf
 spec:
   replicas: 1
   selector:
@@ -53,7 +53,7 @@ spec:
                 - kube-boe4bt5t09sb8c63dq40-sitktbscfcl-default-00000299
       containers:
       - name: orderer
-        image: hyperledger/fabric-orderer:2.2.1
+        image: kcskbcnd93.kcs:5000/hyperledger/fabric-orderer:2.2.1
         command: ["orderer"]
         env:
         - name: ORDERER_GENERAL_LEDGERTYPE
@@ -130,19 +130,19 @@ metadata:
   labels:
     app: blockchain
     run: ordererorg-orderer2
-  namespace: blockchain
+  namespace: dscf
 spec:
   type: NodePort
   selector:
     name: ordererorg-orderer2
   ports:
   - protocol: TCP
-    nodePort: 31012
+    nodePort: 33012
     targetPort: 7050
     port: 7050
     name: grpc
   - protocol: TCP
-    nodePort: 31013
+    nodePort: 33013
     targetPort: 8443
     port: 8443
     name: operations

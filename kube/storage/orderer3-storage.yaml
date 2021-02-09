@@ -4,7 +4,7 @@ metadata:
  name: orderer3-pvc
  labels:
    billingType: hourly
- namespace: blockchain
+ namespace: dscf
 spec:
  accessModes:
    - ReadWriteMany

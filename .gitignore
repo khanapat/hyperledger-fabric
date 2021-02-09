@@ -13,4 +13,4 @@ pid.txt
 next_sequence.txt
 generated/
 .env
-ccp-*.json
+node_modules

@@ -19,26 +19,28 @@ OrdererOrgs:
         SANS:
           - "*.127.0.0.1.xip.io"
           - "localhost"
-          - "128.168.78.50" # TOCHANGE: Add your worker node here (for free IKS cluster) or LoadBalancer IP
-          - "128.168.74.108"
-          - "128.168.74.104"
-          - "ordererorg-orderer1.blockchain.svc.cluster.local"
+          - "10.9.211.106" # TOCHANGE: Add your worker node here (for free IKS cluster) or LoadBalancer IP
+          - "10.9.211.107"
+          - "10.9.211.193"
+          - "ordererorg-orderer1.dscf.svc.cluster.local"
       - Hostname: ordererorg-orderer2
         CommonName: "{{.Hostname}}"
         SANS:
           - "*.127.0.0.1.xip.io"
           - "localhost"
-          - "128.168.74.108"
-          - "128.168.74.104"
-          - "ordererorg-orderer2.blockchain.svc.cluster.local"
+          - "10.9.211.106" # TOCHANGE: Add your worker node here (for free IKS cluster) or LoadBalancer IP
+          - "10.9.211.107"
+          - "10.9.211.193"
+          - "ordererorg-orderer2.dscf.svc.cluster.local"
       - Hostname: ordererorg-orderer3
         CommonName: "{{.Hostname}}"
         SANS:
           - "*.127.0.0.1.xip.io"
           - "localhost"
-          - "128.168.74.108"
-          - "128.168.74.104"
-          - "ordererorg-orderer3.blockchain.svc.cluster.local"
+          - "10.9.211.106" # TOCHANGE: Add your worker node here (for free IKS cluster) or LoadBalancer IP
+          - "10.9.211.107"
+          - "10.9.211.193"
+          - "ordererorg-orderer3.dscf.svc.cluster.local"
     Users:
         Count: 2
 
@@ -61,14 +63,16 @@ PeerOrgs:
         SANS:
           - "*.127.0.0.1.xip.io"
           - "localhost"
-          - "128.168.74.108"
-          - "128.168.74.104"
-          - "org1-peer1.blockchain.svc.cluster.local"
+          - "10.9.211.106" # TOCHANGE: Add your worker node here (for free IKS cluster) or LoadBalancer IP
+          - "10.9.211.107"
+          - "10.9.211.193"
+          - "org1-peer1.dscf.svc.cluster.local"
       - Hostname: org1-peer2
         CommonName: "{{.Hostname}}"
         SANS:
           - "*.127.0.0.1.xip.io"
           - "localhost"
-          - "128.168.74.108"
-          - "128.168.74.104"
-          - "org1-peer2.blockchain.svc.cluster.local"
+          - "10.9.211.106" # TOCHANGE: Add your worker node here (for free IKS cluster) or LoadBalancer IP
+          - "10.9.211.107"
+          - "10.9.211.193"
+          - "org1-peer2.dscf.svc.cluster.local"

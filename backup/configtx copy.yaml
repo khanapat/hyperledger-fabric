@@ -475,9 +475,9 @@ Profiles:
                   ClientTLSCert: crypto-config/ordererOrganizations/ordererorg/orderers/ordererorg-orderer3/tls/server.crt
                   ServerTLSCert: crypto-config/ordererOrganizations/ordererorg/orderers/ordererorg-orderer3/tls/server.crt
             Addresses:
-                - ordererorg-orderer1.blockchain.svc.cluster.local:7050 # ordererorg-orderer1:7050 # 128.168.78.50:31010
-                - ordererorg-orderer2.blockchain.svc.cluster.local:7050 # 128.168.78.50:31012
-                - ordererorg-orderer3.blockchain.svc.cluster.local:7050 # 128.168.78.50:31014
+                - ordererorg-orderer1.dscf.svc.cluster.local:7050 # ordererorg-orderer1:7050 # 128.168.78.50:31010
+                - ordererorg-orderer2.dscf.svc.cluster.local:7050 # 128.168.78.50:31012
+                - ordererorg-orderer3.dscf.svc.cluster.local:7050 # 128.168.78.50:31014
             # END EDIT HERE
             Organizations:
                 - *OrdererOrg

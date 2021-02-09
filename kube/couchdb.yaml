@@ -5,7 +5,7 @@ metadata:
   name: couchdb
   labels:
     run: couchdb
-  namespace: blockchain
+  namespace: dscf
 spec:
   type: NodePort
   selector:
@@ -21,7 +21,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: couchdb
-  namespace: blockchain
+  namespace: dscf
 spec:
   replicas: 1
   selector:

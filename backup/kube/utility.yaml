@@ -3,7 +3,7 @@ apiVersion: v1
 kind: Pod
 metadata:
   name: utility-pod
-  namespace: blockchain
+  namespace: dscf
 spec:
   restartPolicy: "Never"
   volumes:
@@ -57,7 +57,7 @@ spec:
       name: channel1-anchorpeer-org1
   containers:
   - name: util
-    image: hyperledger/fabric-tools:2.2.1
+    image: kcskbcnd93.kcs:5000/hyperledger/fabric-tools:2.2.1
     imagePullPolicy: IfNotPresent
     command: [ "sh", "-c", "--" ]
     args: [ "trap : TERM INT; sleep infinity & wait" ]

@@ -4,7 +4,7 @@ metadata:
   name: ordererorg-orderer1
   labels:
     app: blockchain
-  namespace: blockchain
+  namespace: dscf
 spec:
   replicas: 1
   selector:
@@ -42,18 +42,18 @@ spec:
       - name: genesis
         configMap: 
           name: ordererorg-genesis
-      affinity:
-        nodeAffinity:
-          requiredDuringSchedulingIgnoredDuringExecution:
-            nodeSelectorTerms:
-            - matchExpressions:
-              - key: ibm-cloud.kubernetes.io/worker-id
-                operator: In
-                values:
-                - kube-boe4bt5t09sb8c63dq40-sitktbscfcl-default-0000015a
+      # affinity:
+      #   nodeAffinity:
+      #     requiredDuringSchedulingIgnoredDuringExecution:
+      #       nodeSelectorTerms:
+      #       - matchExpressions:
+      #         - key: ibm-cloud.kubernetes.io/worker-id
+      #           operator: In
+      #           values:
+      #           - kube-boe4bt5t09sb8c63dq40-sitktbscfcl-default-0000015a
       containers:
       - name: orderer
-        image: hyperledger/fabric-orderer:2.2.1
+        image: kcskbcnd93.kcs:5000/hyperledger/fabric-orderer:2.2.1
         command: ["orderer"]
         env:
         - name: ORDERER_GENERAL_LEDGERTYPE
@@ -130,19 +130,19 @@ metadata:
   labels:
     app: blockchain
     run: ordererorg-orderer1
-  namespace: blockchain
+  namespace: dscf
 spec:
   type: NodePort
   selector:
     name: ordererorg-orderer1
   ports:
   - protocol: TCP
-    nodePort: 31010
+    nodePort: 31310
     targetPort: 7050
     port: 7050
     name: grpc
   - protocol: TCP
-    nodePort: 31011
+    nodePort: 31311
     targetPort: 8443
     port: 8443
     name: operations

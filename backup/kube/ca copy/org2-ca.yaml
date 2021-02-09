@@ -5,7 +5,7 @@ metadata:
   name: org2-ca
   labels:
     app: blockchain
-  namespace: blockchain
+  namespace: dscf
 spec:
   replicas: 1
   selector:
@@ -37,7 +37,7 @@ spec:
                 - kube-boe4bt5t09sb8c63dq40-sitktbscfcl-default-00000299
       containers:
       - name: ca
-        image: hyperledger/fabric-ca:1.4.9
+        image: kcskbcnd93.kcs:5000/hyperledger/fabric-ca:1.4.9
         imagePullPolicy: IfNotPresent
         command: ["sh", "-c", "fabric-ca-server start -b admin:adminpw -d"]
         env:
@@ -67,7 +67,7 @@ metadata:
   labels:
     app: blockchain
     run: org2-ca
-  namespace: blockchain
+  namespace: dscf
 spec:
   type: NodePort
   selector:

@@ -4,7 +4,7 @@ metadata:
  name: org2-ca-pvc
  labels:
    billingType: hourly
- namespace: blockchain
+ namespace: dscf
 spec:
  accessModes:
    - ReadWriteMany
