@@ -77,17 +77,49 @@ const start = async () => {
     console.log(`Successfully enrolled registrar ${REGISTRAR_ID} and imported it into the wallet`);
   }
 
-  const appUserExists = await wallet.get(REGISTRAR_ID);
+  const appUser2Exists = await wallet.get('appUser2');
 
-  if (appUserExists) {
-    console.log(`An identity for the appUser already exists in the wallet`);
+  if (appUser2Exists) {
+    console.log(`An identity for the appUser2 already exists in the wallet`);
   } else {
-    console.log(`An identity for the appUser not exists in the wallet`);
+    console.log(`An identity for the appUser2 not exists in the wallet`);
+    // Check to see if we've already enrolled the admin user.
+    const adminIdentity = await wallet.get(REGISTRAR_ID);
+    if (!adminIdentity) {
+      console.log(`An identity for the admin user ${REGISTRAR_ID} does not exist in the wallet`);
+      console.log('Run the enrollAdmin.js application before retrying');
+      return;
+    }
+   
+    // build a user object for authenticating with the CA
+    const provider = wallet.getProviderRegistry().getProvider(adminIdentity.type);
+    const adminUser = await provider.getUserContext(adminIdentity, REGISTRAR_ID);
+
+    // Register the user, enroll the user, and import the new identity into the wallet.
+    const secret = await ca.register({
+        affiliation: 'org1.department1',
+        enrollmentID: 'appUser2',
+        role: 'client'
+    }, adminUser);
+    const enrollmentAppUser = await ca.enroll({
+        enrollmentID: 'appUser2',
+        enrollmentSecret: secret
+    });
+    const x509IdentityAppUser = {
+        credentials: {
+            certificate: enrollmentAppUser.certificate,
+            privateKey: enrollmentAppUser.key.toBytes(),
+        },
+        mspId: 'Org1MSP',
+        type: 'X.509',
+    };
+    await wallet.put('appUser2', x509IdentityAppUser);
+    console.log(`Successfully registered and enrolled user appUser2 and imported it into the wallet`);
   }
   console.log(`Connect Gateway...`);
   const gateway = new Gateway();
   console.log(`IS_LOCALHOST ${IS_LOCALHOST}`);
-  await gateway.connect(ccp, { wallet, identity: 'appUser', discovery: { enabled: true, asLocalhost: IS_LOCALHOST } });
+  await gateway.connect(ccp, { wallet, identity: 'appUser2', discovery: { enabled: true, asLocalhost: IS_LOCALHOST } });
 
   network = await gateway.getNetwork(CHANNEL_NAME);
   contract = network.getContract(CHAINCODE_NAME);

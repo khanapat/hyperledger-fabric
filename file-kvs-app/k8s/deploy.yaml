@@ -5,7 +5,7 @@ metadata:
   labels:
     name: blockchain-api
   name: blockchain-api
-  namespace: blockchain # guarantor-api, blockchain, default
+  namespace: dscf # guarantor-api, blockchain, default
 spec:
   selector:
     matchLabels:
@@ -22,7 +22,7 @@ spec:
     spec:
       containers:
       - name: blockchain-api
-        image: jp.icr.io/test-ktb-scf/blockchain-api:1
+        image: kcskbcnd93.kcs:5000/hyperledger/api-test:0.0.1
         imagePullPolicy: Always
         ports:
         - containerPort: 8080
