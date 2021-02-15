@@ -47,15 +47,15 @@ Organizations:
             - ordererorg-orderer3.dscf.svc.cluster.local:7050 # ordererorg-orderer3:7050 # 128.168.78.50:31014
             
 
-    - &Org1
+    - &KTBOrg
         # DefaultOrg defines the organization which is used in the sampleconfig
         # of the fabric.git development environment
-        Name: Org1MSP
+        Name: KTBOrgMSP
 
         # ID to load the MSP definition as
-        ID: Org1MSP
+        ID: KTBOrgMSP
 
-        MSPDir: crypto-config/peerOrganizations/org1/msp
+        MSPDir: crypto-config/peerOrganizations/ktb/msp
 
         # Policies defines the set of policies at this level of the config tree
         # For organization policies, their canonical path is usually
@@ -63,16 +63,16 @@ Organizations:
         Policies:
             Readers:
                 Type: Signature
-                Rule: "OR('Org1MSP.admin', 'Org1MSP.peer', 'Org1MSP.client')"
+                Rule: "OR('KTBOrgMSP.admin', 'KTBOrgMSP.peer', 'KTBOrgMSP.client')"
             Writers:
                 Type: Signature
-                Rule: "OR('Org1MSP.admin', 'Org1MSP.client')"
+                Rule: "OR('KTBOrgMSP.admin', 'KTBOrgMSP.client')"
             Admins:
                 Type: Signature
-                Rule: "OR('Org1MSP.admin')"
+                Rule: "OR('KTBOrgMSP.admin')"
             Endorsement:
                 Type: Signature
-                Rule: "OR('Org1MSP.peer')"
+                Rule: "OR('KTBOrgMSP.peer')"
 
         OrdererEndpoints:
             - ordererorg-orderer1.dscf.svc.cluster.local:7050 # ordererorg-orderer1:7050 # 128.168.78.50:31010
@@ -85,7 +85,7 @@ Organizations:
             # AnchorPeers defines the location of peers which can be used
             # for cross org gossip communication.  Note, this value is only
             # encoded in the genesis block in the Application section context
-            - Host: org1-peer1
+            - Host: ktborg-peer1
               Port: 7051
 
 ################################################################################
@@ -252,7 +252,7 @@ Application: &ApplicationDefaults
             Rule: "ANY Writers"
         Admins:
             Type: Signature
-            Rule: "OR('Org1MSP.admin')"
+            Rule: "OR('KTBOrgMSP.admin')"
         LifecycleEndorsement:
             Type: ImplicitMeta
             Rule: "MAJORITY Endorsement"
@@ -449,13 +449,13 @@ Profiles:
         Consortiums:
             SampleConsortium:
                 Organizations:
-                    - *Org1
+                    - *KTBOrg
     Channel:
         <<: *ChannelDefaults
         Consortium: SampleConsortium
         Application:
             <<: *ApplicationDefaults
             Organizations:
-                - *Org1
+                - *KTBOrg
             Capabilities:
                 <<: *ApplicationCapabilities
