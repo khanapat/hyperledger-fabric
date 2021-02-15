@@ -32,22 +32,22 @@ do
 	fi
 
 	org_folder=${GENERATED_FOLDER}/crypto-config/${F}/${o}
-	kubectl delete secret ${o}-ca-crypto -n dscf
-	kubectl delete secret admin-${o}-crypto -n dscf
+	kubectl delete secret ${o}-ca-crypto -n ${NAMESPACES}
+	kubectl delete secret admin-${o}-crypto -n ${NAMESPACES}
 	
 	for c in $C
 	do
 		name=${o}-${c} 
-		kubectl delete secret ${name}-ca-crypto -n dscf
+		kubectl delete secret ${name}-ca-crypto -n ${NAMESPACES}
 
-		kubectl delete secret ${name}-tlsca-crypto -n dscf
+		kubectl delete secret ${name}-tlsca-crypto -n ${NAMESPACES}
 	done
 done
 
-kubectl delete -f kube/ca -n dscf
-kubectl delete -f kube/orderer -n dscf
-kubectl delete -f kube/peer -n dscf
-kubectl delete -f kube/utility.yaml -n dscf
+kubectl delete -f kube/ca -n ${NAMESPACES}
+kubectl delete -f kube/orderer -n ${NAMESPACES}
+kubectl delete -f kube/peer -n ${NAMESPACES}
+kubectl delete -f kube/utility.yaml -n ${NAMESPACES}
 # kubectl delete -f kube/namespace.yaml
 
 echo "All blockchain deployments & services & namespace have been removed"

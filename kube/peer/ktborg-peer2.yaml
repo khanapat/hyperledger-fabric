@@ -1,0 +1,159 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ktborg-peer2
+  labels:
+    app: blockchain
+  namespace: dscf
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      name: ktborg-peer2
+      app: blockchain
+  template:
+    metadata:
+      labels:
+        name: ktborg-peer2
+        app: blockchain
+    spec:
+      volumes:
+      - name: peer-data
+        emptyDir: {}
+        # persistentVolumeClaim:
+        #   claimName: org1-peer2-peer-pvc
+      - name: peer-couchdb
+        emptyDir: {}
+        # persistentVolumeClaim:
+        #   claimName: org1-peer2-couchdb-pvc
+      - name: core
+        configMap:
+          name: ktborg-peer2-config
+      - name: msp
+        secret:
+          secretName: ktborg-peer2-ca-crypto
+          items:
+          - key: admincert.pem
+            path: admincerts/admincert.pem
+          - key: cacert.pem
+            path: cacerts/cacert.pem
+          - key: cert.pem
+            path: signcerts/cert.pem
+          - key: key
+            path: keystore/key
+          - key: tlscacert.pem
+            path: tlscacerts/tlscacert.pem
+      - name: tls
+        secret:
+          secretName: ktborg-peer2-tlsca-crypto
+      # affinity:
+      #   nodeAffinity:
+      #     requiredDuringSchedulingIgnoredDuringExecution:
+      #       nodeSelectorTerms:
+      #       - matchExpressions:
+      #         - key: ibm-cloud.kubernetes.io/worker-id
+      #           operator: In
+      #           values:
+      #           - kube-boe4bt5t09sb8c63dq40-sitktbscfcl-default-0000015a
+      containers:
+      - name: peer
+        image: kcskbcnd93.kcs:5000/hyperledger/fabric-peer:2.2.1
+        # Copy external chaincode builder and create symbolic links
+        env:
+        - name: FABRIC_LOGGING_SPEC
+          value: info:chaincode=debug
+        - name: FABRIC_CFG_PATH
+          value: /etc/hyperledger/fabric/
+        - name: ORDERER_URL
+          value: ordererorg-orderer1:7050
+        ports:
+         - containerPort: 7051
+           protocol: TCP
+         - containerPort: 7052
+           protocol: TCP
+         - containerPort: 9443
+           protocol: TCP
+        volumeMounts:
+         - mountPath: /var/hyperledger/production
+           name: peer-data
+         - mountPath: /etc/hyperledger/fabric/
+           name: core
+         - mountPath: /crypto/msp/
+           name: msp
+           readOnly: true
+         - mountPath: /crypto/tls/
+           name: tls
+           readOnly: true
+        readinessProbe:
+          httpGet:
+            path: /healthz
+            port: 9443
+          initialDelaySeconds: 2
+          timeoutSeconds: 5
+          periodSeconds: 5
+          failureThreshold: 10
+      - name: dind
+        image: kcskbcnd93.kcs:5000/hyperledger/docker:18.09.7-dind
+        env:
+         - name: LICENSE
+           value: accept
+        ports:
+         - containerPort: 2375
+           protocol: TCP
+        securityContext:
+          privileged: true
+          readOnlyRootFilesystem: false
+          runAsNonRoot: false
+          runAsUser: 0
+          capabilities:
+            drop:
+              - ALL
+            add:
+              - NET_BIND_SERVICE
+      - name: couchdb
+        image: kcskbcnd93.kcs:5000/hyperledger/couchdb:3.1.0
+        volumeMounts:
+        - mountPath: /opt/couchdb/data
+          name: peer-couchdb
+        env:
+        - name: COUCHDB_USER
+          value: user
+        - name: COUCHDB_PASSWORD
+          value: pass
+        ports:
+         - containerPort: 5984
+           protocol: TCP
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ktborg-peer2
+  labels:
+    app: blockchain
+    run: ktborg-peer2
+  namespace: dscf
+spec:
+  type: NodePort
+  selector:
+    name: ktborg-peer2
+  ports:
+  - protocol: TCP
+    nodePort: 31340
+    targetPort: 7051
+    port: 7051
+    name: grpc
+  - protocol: TCP
+    nodePort: 31341
+    targetPort: 5984
+    port: 5984
+    name: couchdb
+  - protocol: TCP
+    targetPort: 7052
+    port: 7052
+    name: chaincode
+  - protocol: TCP
+    nodePort: 31342
+    targetPort: 9443
+    port: 9443
+    name: operations

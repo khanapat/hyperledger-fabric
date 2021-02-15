@@ -86,13 +86,13 @@ done
 echo
 echo "=> Creating Utility Pod"
 kubectl apply -f kube/utility.yaml
-kubectl wait --for=condition=Ready pod/utility-pod  -n dscf --timeout=300s
+kubectl wait --for=condition=Ready pod/utility-pod -n ${NAMESPACES} --timeout=300s
 
-# echo ""
-# echo "=> CREATE_BLOCKCHAIN: Creating CA, Orderer and Peers"
-# kubectl apply -f kube/peer
+echo
+echo "=> Creating CA, Orderer and Peers"
+kubectl apply -f kube/peer
 # kubectl apply -f kube/ca
-# kubectl apply -f kube/orderer
+kubectl apply -f kube/orderer
 
 # echo ""
 # echo "=> CREATE_BLOCKCHAIN: Checking if all deployments are ready"
