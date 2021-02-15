@@ -55,7 +55,7 @@ PeerOrgs:
 
     CA:
       Hostname: ca
-      CommonName: ktbca
+      CommonName: ktborgca
 
     Specs:
       - Hostname: ktborg-peer1

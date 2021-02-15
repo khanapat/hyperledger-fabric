@@ -2,15 +2,23 @@
 
 source .env
 
-CHANNEL_NAME=channel1
+DOCUMENT_CHANNEL=document
+VERIFIER_CHANNEL=document-verifier
+PUBLICKEY_CHANNEL=public-key
+NAMESPACES=dscf
 
 echo "Deleting blockchain deployments"
-kubectl delete cm ordererorg-genesis -n dscf
-kubectl delete cm ${CHANNEL_NAME}-genesis -n dscf
+kubectl delete cm ordererorg-genesis -n ${NAMESPACES}
 
-kubectl delete cm ${CHANNEL_NAME}-anchorpeer-org1 -n dscf
+kubectl delete cm ${DOCUMENT_CHANNEL}-genesis -n ${NAMESPACES}
+kubectl delete cm ${VERIFIER_CHANNEL}-genesis -n ${NAMESPACES}
+kubectl delete cm ${PUBLICKEY_CHANNEL}-genesis -n ${NAMESPACES}
 
-ORGS="ordererorg org1"
+kubectl delete cm ${DOCUMENT_CHANNEL}-anchorpeer-ktborg -n ${NAMESPACES}
+kubectl delete cm ${VERIFIER_CHANNEL}-anchorpeer-ktborg -n ${NAMESPACES}
+kubectl delete cm ${PUBLICKEY_CHANNEL}-anchorpeer-ktborg -n ${NAMESPACES}
+
+ORGS="ordererorg ktborg"
 for o in $ORGS
 do
 	if [ "$o" == "ordererorg" ]; then
@@ -20,7 +28,7 @@ do
 	else
 		F="peerOrganizations"
 		G="peers"
-		C="peer1"
+		C="peer1 peer2"
 	fi
 
 	org_folder=${GENERATED_FOLDER}/crypto-config/${F}/${o}
