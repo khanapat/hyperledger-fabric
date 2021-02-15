@@ -49,16 +49,16 @@ OrdererOrgs:
 # ---------------------------------------------------------------------------
 PeerOrgs:
 
-  - Name: Org1
-    Domain: org1
+  - Name: KTB
+    Domain: ktb
     EnableNodeOUs: true
 
     CA:
       Hostname: ca
-      CommonName: org1ca
+      CommonName: ktbca
 
     Specs:
-      - Hostname: org1-peer1
+      - Hostname: ktb-peer1
         CommonName: "{{.Hostname}}"
         SANS:
           - "*.127.0.0.1.xip.io"
@@ -66,8 +66,8 @@ PeerOrgs:
           - "10.9.211.106" # TOCHANGE: Add your worker node here (for free IKS cluster) or LoadBalancer IP
           - "10.9.211.107"
           - "10.9.211.193"
-          - "org1-peer1.dscf.svc.cluster.local"
-      - Hostname: org1-peer2
+          - "ktb-peer1.dscf.svc.cluster.local"
+      - Hostname: ktb-peer2
         CommonName: "{{.Hostname}}"
         SANS:
           - "*.127.0.0.1.xip.io"
@@ -75,4 +75,4 @@ PeerOrgs:
           - "10.9.211.106" # TOCHANGE: Add your worker node here (for free IKS cluster) or LoadBalancer IP
           - "10.9.211.107"
           - "10.9.211.193"
-          - "org1-peer2.dscf.svc.cluster.local"
+          - "ktb-peer2.dscf.svc.cluster.local"
