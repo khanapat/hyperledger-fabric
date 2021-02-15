@@ -25,7 +25,7 @@ Organizations:
         ID: OrdererMSP
 
         # MSPDir is the filesystem path which contains the MSP configuration
-        MSPDir: crypto-config/ordererOrganizations/ordererorg/msp
+        MSPDir: generated/crypto-config/ordererOrganizations/ordererorg/msp
 
         # Policies defines the set of policies at this level of the config tree
         # For organization policies, their canonical path is usually
@@ -55,7 +55,7 @@ Organizations:
         # ID to load the MSP definition as
         ID: KTBOrgMSP
 
-        MSPDir: crypto-config/peerOrganizations/ktb/msp
+        MSPDir: generated/crypto-config/peerOrganizations/ktborg/msp
 
         # Policies defines the set of policies at this level of the config tree
         # For organization policies, their canonical path is usually
@@ -318,16 +318,16 @@ Orderer: &OrdererDefaults
         Consenters:
         - Host: ordererorg-orderer1.dscf.svc.cluster.local 
           Port: 7050
-          ClientTLSCert: crypto-config/ordererOrganizations/ordererorg/orderers/ordererorg-orderer1/tls/server.crt
-          ServerTLSCert: crypto-config/ordererOrganizations/ordererorg/orderers/ordererorg-orderer1/tls/server.crt
+          ClientTLSCert: generated/crypto-config/ordererOrganizations/ordererorg/orderers/ordererorg-orderer1/tls/server.crt
+          ServerTLSCert: generated/crypto-config/ordererOrganizations/ordererorg/orderers/ordererorg-orderer1/tls/server.crt
         - Host: ordererorg-orderer2.dscf.svc.cluster.local 
           Port: 7050
-          ClientTLSCert: crypto-config/ordererOrganizations/ordererorg/orderers/ordererorg-orderer2/tls/server.crt
-          ServerTLSCert: crypto-config/ordererOrganizations/ordererorg/orderers/ordererorg-orderer2/tls/server.crt
+          ClientTLSCert: generated/crypto-config/ordererOrganizations/ordererorg/orderers/ordererorg-orderer2/tls/server.crt
+          ServerTLSCert: generated/crypto-config/ordererOrganizations/ordererorg/orderers/ordererorg-orderer2/tls/server.crt
         - Host: ordererorg-orderer3.dscf.svc.cluster.local 
           Port: 7050
-          ClientTLSCert: crypto-config/ordererOrganizations/ordererorg/orderers/ordererorg-orderer3/tls/server.crt
-          ServerTLSCert: crypto-config/ordererOrganizations/ordererorg/orderers/ordererorg-orderer3/tls/server.crt
+          ClientTLSCert: generated/crypto-config/ordererOrganizations/ordererorg/orderers/ordererorg-orderer3/tls/server.crt
+          ServerTLSCert: generated/crypto-config/ordererOrganizations/ordererorg/orderers/ordererorg-orderer3/tls/server.crt
 
         # Options to be specified for all the etcd/raft nodes. The values here
         # are the defaults for all new channels and can be modified on a
@@ -430,16 +430,16 @@ Profiles:
                 Consenters: 
                 - Host: ordererorg-orderer1.dscf.svc.cluster.local # 128.168.74.108 
                   Port: 7050
-                  ClientTLSCert: crypto-config/ordererOrganizations/ordererorg/orderers/ordererorg-orderer1/tls/server.crt
-                  ServerTLSCert: crypto-config/ordererOrganizations/ordererorg/orderers/ordererorg-orderer1/tls/server.crt
+                  ClientTLSCert: generated/crypto-config/ordererOrganizations/ordererorg/orderers/ordererorg-orderer1/tls/server.crt
+                  ServerTLSCert: generated/crypto-config/ordererOrganizations/ordererorg/orderers/ordererorg-orderer1/tls/server.crt
                 - Host: ordererorg-orderer2.dscf.svc.cluster.local # 128.168.78.50
                   Port: 7050 # 31012
-                  ClientTLSCert: crypto-config/ordererOrganizations/ordererorg/orderers/ordererorg-orderer2/tls/server.crt
-                  ServerTLSCert: crypto-config/ordererOrganizations/ordererorg/orderers/ordererorg-orderer2/tls/server.crt
+                  ClientTLSCert: generated/crypto-config/ordererOrganizations/ordererorg/orderers/ordererorg-orderer2/tls/server.crt
+                  ServerTLSCert: generated/crypto-config/ordererOrganizations/ordererorg/orderers/ordererorg-orderer2/tls/server.crt
                 - Host: ordererorg-orderer3.dscf.svc.cluster.local # 128.168.78.50
                   Port: 7050 # 31014
-                  ClientTLSCert: crypto-config/ordererOrganizations/ordererorg/orderers/ordererorg-orderer3/tls/server.crt
-                  ServerTLSCert: crypto-config/ordererOrganizations/ordererorg/orderers/ordererorg-orderer3/tls/server.crt
+                  ClientTLSCert: generated/crypto-config/ordererOrganizations/ordererorg/orderers/ordererorg-orderer3/tls/server.crt
+                  ServerTLSCert: generated/crypto-config/ordererOrganizations/ordererorg/orderers/ordererorg-orderer3/tls/server.crt
             Addresses:
                 - ordererorg-orderer1.dscf.svc.cluster.local:7050 # ordererorg-orderer1:7050 # 128.168.78.50:31010
                 - ordererorg-orderer2.dscf.svc.cluster.local:7050 # ordererorg-orderer2:7050 # 128.168.78.50:31012

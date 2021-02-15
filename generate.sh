@@ -43,7 +43,7 @@ echo
 echo "##########################################################"
 echo "############## GENERATE CRYPTO & ARTIFACTS ###############"
 echo "##########################################################"
-cryptogen generate --config=./crypto-config.yaml
+cryptogen generate --config=./crypto-config.yaml --output=./${GENERATED_FOLDER}/crypto-config
 if [ "$?" -ne 0 ]; then
   echo "Failed to generate crypto material..."
   exit 1
@@ -134,8 +134,8 @@ configtxgen -profile Channel \
 
 # mv crypto-config ./${GENERATED_FOLDER}/
 
-# rm -f .env
+rm -f .env
 
-# echo "GENERATED_FOLDER=${GENERATED_FOLDER}" >> .env
-# echo "COMPOSE_PROJECT_NAME=net" >> .env
-# echo "ROOT_FOLDER=$(PWD)" >> .env
+echo "GENERATED_FOLDER=${GENERATED_FOLDER}" >> .env
+echo "COMPOSE_PROJECT_NAME=net" >> .env
+echo "ROOT_FOLDER=$(PWD)" >> .env
