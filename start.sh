@@ -94,26 +94,161 @@ kubectl apply -f kube/peer
 kubectl apply -f kube/ca
 kubectl apply -f kube/orderer
 
-# echo ""
-# echo "=> CREATE_BLOCKCHAIN: Checking if all deployments are ready"
-# kubectl wait --for=condition=Ready pod -l app=blockchain --timeout=300s -n dscf
+echo
+echo "=> Checking if all deployments are ready"
+kubectl wait --for=condition=Ready pod -l app=blockchain --timeout=300s -n ${NAMESPACES}
 
-# echo ""
-# echo "=> CREATE_BLOCKCHAIN: Waiting for 30 seconds for RAFT leader to be elected"
-# sleep 30
+echo
+echo "=> Waiting for 30 seconds for RAFT leader to be elected"
+sleep 30
 
-# kubectl exec utility-pod -n dscf \
-#  -- sh -c 'peer channel create -o ${ORDERER_URL} -c ${CHANNEL_NAME} --tls --cafile ${ORDERER_CA_TLS} -f /data/${CHANNEL_NAME}.block'
-# sleep 2
+echo
+echo "##########################################################"
+echo "############### CONNECTING DOCUMENT CHANNEL ##############"
+echo "##########################################################"
+echo "=> Creating ${DOCUMENT_CHANNEL} channel"
+kubectl exec utility-pod -n ${NAMESPACES} \
+ -- sh -c 'CORE_PEER_MSPCONFIGPATH=/crypto/ktborg/users/Admin@ktborg/msp
+  CORE_PEER_ADDRESS=ktborg-peer1:7051
+  CORE_PEER_LOCALMSPID=KTBOrgMSP
+  CORE_PEER_TLS_ENABLED=true
+  CORE_PEER_TLS_ROOTCERT_FILE=/crypto/ktborg/peers/ktborg-peer1/tls/ca.crt
+  CHANNEL_NAME=document
+  ORDERER_URL=ordererorg-orderer1:7050
+  ORDERER_CA_TLS=/crypto/ordererorg/orderers/ordererorg-orderer1/tls/ca.crt
+  peer channel create -o ${ORDERER_URL} -c ${CHANNEL_NAME} --tls --cafile ${ORDERER_CA_TLS} -f /data-document-genesis-channel/${CHANNEL_NAME}.block'
+sleep 2
 
-# echo ""
-# echo "=> CREATE_BLOCKCHAIN: Join Channel on Org1 Peer1"
-# kubectl exec utility-pod -n dscf \
-#  -- sh -c 'peer channel fetch config -o ${ORDERER_URL} -c ${CHANNEL_NAME} --tls --cafile ${ORDERER_CA_TLS} && peer channel join -b ${CHANNEL_NAME}_config.block'
+echo
+echo "=> Join ${DOCUMENT_CHANNEL} Channel on KTBOrg Peer1"
+kubectl exec utility-pod -n dscf \
+ -- sh -c 'CORE_PEER_ADDRESS=ktborg-peer1:7051
+  CORE_PEER_TLS_ROOTCERT_FILE=/crypto/ktborg/peers/ktborg-peer1/tls/ca.crt
+  CHANNEL_NAME=document
+  ORDERER_URL=ordererorg-orderer1:7050
+  ORDERER_CA_TLS=/crypto/ordererorg/orderers/ordererorg-orderer1/tls/ca.crt
+  peer channel fetch config -o ${ORDERER_URL} -c ${CHANNEL_NAME} --tls --cafile ${ORDERER_CA_TLS} && peer channel join -b ${CHANNEL_NAME}_config.block'
+sleep 2
 
-# echo ""
-# echo "=> CREATE_BLOCKCHAIN: Update Anchor Peer for Org1MSP"
-# kubectl exec utility-pod -n dscf \
-#  -- sh -c 'peer channel update -o ${ORDERER_URL} -c ${CHANNEL_NAME} --tls --cafile ${ORDERER_CA_TLS} -f /anchorpeers/org1/Org1MSPanchors.tx'
+echo
+echo "=> Join ${DOCUMENT_CHANNEL} Channel on KTBOrg Peer2"
+kubectl exec utility-pod -n dscf \
+ -- sh -c 'CORE_PEER_ADDRESS=ktborg-peer2:7051
+  CORE_PEER_TLS_ROOTCERT_FILE=/crypto/ktborg/peers/ktborg-peer2/tls/ca.crt
+  CHANNEL_NAME=document
+  ORDERER_URL=ordererorg-orderer1:7050
+  ORDERER_CA_TLS=/crypto/ordererorg/orderers/ordererorg-orderer1/tls/ca.crt
+  peer channel fetch config -o ${ORDERER_URL} -c ${CHANNEL_NAME} --tls --cafile ${ORDERER_CA_TLS} && peer channel join -b ${CHANNEL_NAME}_config.block'
+sleep 2
 
-# echo "Done!!"
+echo
+echo "=> Update Anchor Peer for KTBOrgMSP"
+kubectl exec utility-pod -n dscf \
+ -- sh -c 'CORE_PEER_ADDRESS=ktborg-peer1:7051
+  CORE_PEER_TLS_ROOTCERT_FILE=/crypto/ktborg/peers/ktborg-peer1/tls/ca.crt
+  CHANNEL_NAME=document
+  ORDERER_URL=ordererorg-orderer1:7050
+  ORDERER_CA_TLS=/crypto/ordererorg/orderers/ordererorg-orderer1/tls/ca.crt
+  peer channel update -o ${ORDERER_URL} -c ${CHANNEL_NAME} --tls --cafile ${ORDERER_CA_TLS} -f /anchorpeers/ktborg-document/KTBOrgDocumentMSPanchors.tx'
+sleep 2
+
+echo
+echo "##########################################################"
+echo "############### CONNECTING VERIFIER CHANNEL ##############"
+echo "##########################################################"
+echo "=> Creating ${VERIFIER_CHANNEL} channel"
+kubectl exec utility-pod -n ${NAMESPACES} \
+ -- sh -c 'CORE_PEER_MSPCONFIGPATH=/crypto/ktborg/users/Admin@ktborg/msp
+  CORE_PEER_ADDRESS=ktborg-peer1:7051
+  CORE_PEER_LOCALMSPID=KTBOrgMSP
+  CORE_PEER_TLS_ENABLED=true
+  CORE_PEER_TLS_ROOTCERT_FILE=/crypto/ktborg/peers/ktborg-peer1/tls/ca.crt
+  CHANNEL_NAME=document-verifier
+  ORDERER_URL=ordererorg-orderer1:7050
+  ORDERER_CA_TLS=/crypto/ordererorg/orderers/ordererorg-orderer1/tls/ca.crt
+  peer channel create -o ${ORDERER_URL} -c ${CHANNEL_NAME} --tls --cafile ${ORDERER_CA_TLS} -f /data-document-verifier-genesis-channel/${CHANNEL_NAME}.block'
+sleep 2
+
+echo
+echo "=> Join ${VERIFIER_CHANNEL} Channel on KTBOrg Peer1"
+kubectl exec utility-pod -n dscf \
+ -- sh -c 'CORE_PEER_ADDRESS=ktborg-peer1:7051
+  CORE_PEER_TLS_ROOTCERT_FILE=/crypto/ktborg/peers/ktborg-peer1/tls/ca.crt
+  CHANNEL_NAME=document-verifier
+  ORDERER_URL=ordererorg-orderer1:7050
+  ORDERER_CA_TLS=/crypto/ordererorg/orderers/ordererorg-orderer1/tls/ca.crt
+  peer channel fetch config -o ${ORDERER_URL} -c ${CHANNEL_NAME} --tls --cafile ${ORDERER_CA_TLS} && peer channel join -b ${CHANNEL_NAME}_config.block'
+sleep 2
+
+echo
+echo "=> Join ${VERIFIER_CHANNEL} Channel on KTBOrg Peer2"
+kubectl exec utility-pod -n dscf \
+ -- sh -c 'CORE_PEER_ADDRESS=ktborg-peer2:7051
+  CORE_PEER_TLS_ROOTCERT_FILE=/crypto/ktborg/peers/ktborg-peer2/tls/ca.crt
+  CHANNEL_NAME=document-verifier
+  ORDERER_URL=ordererorg-orderer1:7050
+  ORDERER_CA_TLS=/crypto/ordererorg/orderers/ordererorg-orderer1/tls/ca.crt
+  peer channel fetch config -o ${ORDERER_URL} -c ${CHANNEL_NAME} --tls --cafile ${ORDERER_CA_TLS} && peer channel join -b ${CHANNEL_NAME}_config.block'
+sleep 2
+
+echo
+echo "=> Update Anchor Peer for KTBOrgMSP"
+kubectl exec utility-pod -n dscf \
+ -- sh -c 'CORE_PEER_ADDRESS=ktborg-peer1:7051
+  CORE_PEER_TLS_ROOTCERT_FILE=/crypto/ktborg/peers/ktborg-peer1/tls/ca.crt
+  CHANNEL_NAME=document-verifier
+  ORDERER_URL=ordererorg-orderer1:7050
+  ORDERER_CA_TLS=/crypto/ordererorg/orderers/ordererorg-orderer1/tls/ca.crt
+  peer channel update -o ${ORDERER_URL} -c ${CHANNEL_NAME} --tls --cafile ${ORDERER_CA_TLS} -f /anchorpeers/ktborg-document-verifier/KTBOrgVerifierMSPanchors.tx'
+sleep 2
+
+echo
+echo "##########################################################"
+echo "############## CONNECTING PUBLICKEY CHANNEL ##############"
+echo "##########################################################"
+echo "=> Creating ${PUBLICKEY_CHANNEL} channel"
+kubectl exec utility-pod -n ${NAMESPACES} \
+ -- sh -c 'CORE_PEER_MSPCONFIGPATH=/crypto/ktborg/users/Admin@ktborg/msp
+  CORE_PEER_ADDRESS=ktborg-peer1:7051
+  CORE_PEER_LOCALMSPID=KTBOrgMSP
+  CORE_PEER_TLS_ENABLED=true
+  CORE_PEER_TLS_ROOTCERT_FILE=/crypto/ktborg/peers/ktborg-peer1/tls/ca.crt
+  CHANNEL_NAME=public-key
+  ORDERER_URL=ordererorg-orderer1:7050
+  ORDERER_CA_TLS=/crypto/ordererorg/orderers/ordererorg-orderer1/tls/ca.crt
+  peer channel create -o ${ORDERER_URL} -c ${CHANNEL_NAME} --tls --cafile ${ORDERER_CA_TLS} -f /data-public-key-genesis-channel/${CHANNEL_NAME}.block'
+sleep 2
+
+echo
+echo "=> Join ${PUBLICKEY_CHANNEL} Channel on KTBOrg Peer1"
+kubectl exec utility-pod -n dscf \
+ -- sh -c 'CORE_PEER_ADDRESS=ktborg-peer1:7051
+  CORE_PEER_TLS_ROOTCERT_FILE=/crypto/ktborg/peers/ktborg-peer1/tls/ca.crt
+  CHANNEL_NAME=public-key
+  ORDERER_URL=ordererorg-orderer1:7050
+  ORDERER_CA_TLS=/crypto/ordererorg/orderers/ordererorg-orderer1/tls/ca.crt
+  peer channel fetch config -o ${ORDERER_URL} -c ${CHANNEL_NAME} --tls --cafile ${ORDERER_CA_TLS} && peer channel join -b ${CHANNEL_NAME}_config.block'
+sleep 2
+
+echo
+echo "=> Join ${PUBLICKEY_CHANNEL} Channel on KTBOrg Peer2"
+kubectl exec utility-pod -n dscf \
+ -- sh -c 'CORE_PEER_ADDRESS=ktborg-peer2:7051
+  CORE_PEER_TLS_ROOTCERT_FILE=/crypto/ktborg/peers/ktborg-peer2/tls/ca.crt
+  CHANNEL_NAME=public-key
+  ORDERER_URL=ordererorg-orderer1:7050
+  ORDERER_CA_TLS=/crypto/ordererorg/orderers/ordererorg-orderer1/tls/ca.crt
+  peer channel fetch config -o ${ORDERER_URL} -c ${CHANNEL_NAME} --tls --cafile ${ORDERER_CA_TLS} && peer channel join -b ${CHANNEL_NAME}_config.block'
+sleep 2
+
+echo
+echo "=> Update Anchor Peer for KTBOrgMSP"
+kubectl exec utility-pod -n dscf \
+ -- sh -c 'CORE_PEER_ADDRESS=ktborg-peer1:7051
+  CORE_PEER_TLS_ROOTCERT_FILE=/crypto/ktborg/peers/ktborg-peer1/tls/ca.crt
+  CHANNEL_NAME=public-key
+  ORDERER_URL=ordererorg-orderer1:7050
+  ORDERER_CA_TLS=/crypto/ordererorg/orderers/ordererorg-orderer1/tls/ca.crt
+  peer channel update -o ${ORDERER_URL} -c ${CHANNEL_NAME} --tls --cafile ${ORDERER_CA_TLS} -f /anchorpeers/ktborg-public-key/KTBOrgPublicKeyMSPanchors.tx'
+
+echo "Done!!"
