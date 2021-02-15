@@ -4,7 +4,7 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 #
-export PATH=${PWD}/bin:$PATH
+export PATH=${PWD}/bin:${PATH}
 export FABRIC_CFG_PATH=${PWD}
 
 CHANNEL_NAME=channel1
@@ -18,22 +18,22 @@ if ! [ -x "$(command -v configtxgen)" ]; then
 fi
 
 # create the GENERATED_FOLDER
-if [ -d $GENERATED_FOLDER ]; then 
+if [ -d ${GENERATED_FOLDER} ]; then 
 
     # ask to confirm to clear it 
     read -p "Folder ${GENERATED_FOLDER} exists. Clear ? (Y to continue): " S_CONTINUE
     if [[ "${S_CONTINUE:-Y}" =~ ^[Yy]$ ]]; then
 
         # remove previous crypto material and config transactions
-        rm -fr $GENERATED_FOLDER
-        mkdir -p $GENERATED_FOLDER/configtx
+        rm -fr ${GENERATED_FOLDER}
+        mkdir -p ${GENERATED_FOLDER}/configtx
     else 
         exit 1
     fi
 else
     # create the folder
-    mkdir -p $GENERATED_FOLDER
-    mkdir -p $GENERATED_FOLDER/configtx
+    mkdir -p ${GENERATED_FOLDER}
+    mkdir -p ${GENERATED_FOLDER}/configtx
 fi
 
 # generate crypto material
@@ -57,23 +57,23 @@ configtxgen -profile OrdererGenesis -outputBlock orderer.block -channelID testch
 configtxgen -profile Channel -outputCreateChannelTx ${CHANNEL_NAME}.tx -channelID ${CHANNEL_NAME}
 
 # generate genesis block for orderer
-configtxgen -profile OrdererGenesis -outputBlock ./$GENERATED_FOLDER/configtx/orderer.block -channelID testchainid
+configtxgen -profile OrdererGenesis -outputBlock ./${GENERATED_FOLDER}/configtx/orderer.block -channelID testchainid
 
 # generate channel configuration transaction
-configtxgen -profile Channel -outputCreateChannelTx ./$GENERATED_FOLDER/configtx/${CHANNEL_NAME}.tx -channelID $CHANNEL_NAME
+configtxgen -profile Channel -outputCreateChannelTx ./${GENERATED_FOLDER}/configtx/${CHANNEL_NAME}.tx -channelID $CHANNEL_NAME
 
 configtxgen -profile Channel \
-    -outputAnchorPeersUpdate ./$GENERATED_FOLDER/configtx/Org1MSPanchors.tx \
+    -outputAnchorPeersUpdate ./${GENERATED_FOLDER}/configtx/Org1MSPanchors.tx \
     -channelID $CHANNEL_NAME -asOrg Org1MSP
 
 # configtxgen -profile Channel \
-#     -outputAnchorPeersUpdate ./$GENERATED_FOLDER/configtx/Org2MSPanchors.tx \
+#     -outputAnchorPeersUpdate ./${GENERATED_FOLDER}/configtx/Org2MSPanchors.tx \
 #     -channelID $CHANNEL_NAME -asOrg Org2MSP
 
-mv crypto-config ./$GENERATED_FOLDER/
+mv crypto-config ./${GENERATED_FOLDER}/
 
 rm -f .env
 
-echo "GENERATED_FOLDER=$GENERATED_FOLDER" >> .env
+echo "GENERATED_FOLDER=${GENERATED_FOLDER}" >> .env
 echo "COMPOSE_PROJECT_NAME=net" >> .env
 echo "ROOT_FOLDER=$(PWD)" >> .env
