@@ -37,43 +37,68 @@ else
 fi
 
 # generate crypto material
+echo
+echo "##########################################################"
+echo "############## GENERATE CRYPTO & ARTIFACTS ###############"
+echo "##########################################################"
 cryptogen generate --config=./crypto-config.yaml
+if [ "$?" -ne 0 ]; then
+  echo "Failed to generate crypto material..."
+  exit 1
+fi
 
 # Rename key files to key.pem
-for file in $(find crypto-config/ -iname *_sk); do dir=$(dirname $file); mv ${dir}/*_sk ${dir}/key.pem; done
+echo
+echo "##########################################################"
+echo "################### CHANGE CA KEY NAME ###################"
+echo "##########################################################"
+for file in $(find crypto-config/ -iname *_sk)
+do
+    dir=$(dirname $file)
+    mv ${dir}/*_sk ${dir}/key.pem
+    echo "${dir}/key.pem"
+done
 
-# IBP requires an admin certificate in MSP definition despite of NodeOU
-echo "Inserting admin certificate in MSP definition"
-cp crypto-config/ordererOrganizations/ordererorg/users/Admin@ordererorg/msp/signcerts/Admin@ordererorg-cert.pem \
- crypto-config/ordererOrganizations/ordererorg/msp/admincerts
+# # IBP requires an admin certificate in MSP definition despite of NodeOU
+# echo "Inserting admin certificate in MSP definition"
+# cp crypto-config/ordererOrganizations/ordererorg/users/Admin@ordererorg/msp/signcerts/Admin@ordererorg-cert.pem \
+#  crypto-config/ordererOrganizations/ordererorg/msp/admincerts
 
-cp crypto-config/peerOrganizations/org1/users/Admin@org1/msp/signcerts/Admin@org1-cert.pem \
- crypto-config/peerOrganizations/org1/msp/admincerts
+# cp crypto-config/peerOrganizations/org1/users/Admin@org1/msp/signcerts/Admin@org1-cert.pem \
+#  crypto-config/peerOrganizations/org1/msp/admincerts
 
-# cp crypto-config/peerOrganizations/org2/users/Admin@org2/msp/signcerts/Admin@org2-cert.pem \
-#  crypto-config/peerOrganizations/org2/msp/admincerts
+# # cp crypto-config/peerOrganizations/org2/users/Admin@org2/msp/signcerts/Admin@org2-cert.pem \
+# #  crypto-config/peerOrganizations/org2/msp/admincerts
 
-configtxgen -profile OrdererGenesis -outputBlock orderer.block -channelID testchainid
-configtxgen -profile Channel -outputCreateChannelTx ${CHANNEL_NAME}.tx -channelID ${CHANNEL_NAME}
+# configtxgen -profile OrdererGenesis -outputBlock orderer.block -channelID testchainid
+# configtxgen -profile Channel -outputCreateChannelTx ${CHANNEL_NAME}.tx -channelID ${CHANNEL_NAME}
 
 # generate genesis block for orderer
+echo
+echo "##########################################################"
+echo "################# GENERATE GENESIS BLOCK #################"
+echo "##########################################################"
 configtxgen -profile OrdererGenesis -outputBlock ./${GENERATED_FOLDER}/configtx/orderer.block -channelID testchainid
+if [ "$?" -ne 0 ]; then
+  echo "Failed to generate orderer genesis block..."
+  exit 1
+fi
 
-# generate channel configuration transaction
-configtxgen -profile Channel -outputCreateChannelTx ./${GENERATED_FOLDER}/configtx/${CHANNEL_NAME}.tx -channelID $CHANNEL_NAME
-
-configtxgen -profile Channel \
-    -outputAnchorPeersUpdate ./${GENERATED_FOLDER}/configtx/Org1MSPanchors.tx \
-    -channelID $CHANNEL_NAME -asOrg Org1MSP
+# # generate channel configuration transaction
+# configtxgen -profile Channel -outputCreateChannelTx ./${GENERATED_FOLDER}/configtx/${CHANNEL_NAME}.tx -channelID $CHANNEL_NAME
 
 # configtxgen -profile Channel \
-#     -outputAnchorPeersUpdate ./${GENERATED_FOLDER}/configtx/Org2MSPanchors.tx \
-#     -channelID $CHANNEL_NAME -asOrg Org2MSP
+#     -outputAnchorPeersUpdate ./${GENERATED_FOLDER}/configtx/Org1MSPanchors.tx \
+#     -channelID $CHANNEL_NAME -asOrg Org1MSP
 
-mv crypto-config ./${GENERATED_FOLDER}/
+# # configtxgen -profile Channel \
+# #     -outputAnchorPeersUpdate ./${GENERATED_FOLDER}/configtx/Org2MSPanchors.tx \
+# #     -channelID $CHANNEL_NAME -asOrg Org2MSP
 
-rm -f .env
+# mv crypto-config ./${GENERATED_FOLDER}/
 
-echo "GENERATED_FOLDER=${GENERATED_FOLDER}" >> .env
-echo "COMPOSE_PROJECT_NAME=net" >> .env
-echo "ROOT_FOLDER=$(PWD)" >> .env
+# rm -f .env
+
+# echo "GENERATED_FOLDER=${GENERATED_FOLDER}" >> .env
+# echo "COMPOSE_PROJECT_NAME=net" >> .env
+# echo "ROOT_FOLDER=$(PWD)" >> .env
