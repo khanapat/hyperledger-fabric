@@ -54,7 +54,7 @@ echo
 echo "##########################################################"
 echo "################### CHANGE CA KEY NAME ###################"
 echo "##########################################################"
-for file in $(find crypto-config/ -iname *_sk)
+for file in $(find ${GENERATED_FOLDER}/crypto-config/ -iname *_sk)
 do
     dir=$(dirname $file)
     mv ${dir}/*_sk ${dir}/key.pem

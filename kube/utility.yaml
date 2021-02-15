@@ -9,9 +9,9 @@ spec:
   volumes:
   - name: tmp
     emptyDir: {}
-  - name: admin-org1
+  - name: admin-ktborg
     secret:
-      secretName: admin-org1-crypto
+      secretName: admin-ktborg-crypto
       items:
       - key: admincert.pem
         path: admincerts/admincert.pem
@@ -37,9 +37,14 @@ spec:
         path: keystore/key
       - key: tlscacert.pem
         path: tlscacerts/tlscacert.pem
-  - name: org1-peer1-tls
+  # ktborg
+  - name: ktborg-peer1-tls
     secret:
-      secretName: org1-peer1-tlsca-crypto
+      secretName: ktborg-peer1-tlsca-crypto
+  - name: ktborg-peer2-tls
+    secret:
+      secretName: ktborg-peer2-tlsca-crypto
+  # ordererorg
   - name: ordererorg-orderer1-tls
     secret:
       secretName: ordererorg-orderer1-tlsca-crypto
@@ -49,12 +54,26 @@ spec:
   - name: ordererorg-orderer3-tls
     secret:
       secretName: ordererorg-orderer3-tlsca-crypto
-  - name: channel1-genesis
+  # channel
+  - name: document-genesis-channel
+    configMap:
+      name: document-genesis
+  - name: document-verifier-genesis-channel
+    configMap:
+      name: document-verifier-genesis
+  - name: public-key-genesis-channel
+    configMap:
+      name: public-key-genesis
+  # anchor
+  - name: document-anchorpeer-ktborg
     configMap: 
-      name: channel1-genesis
-  - name: channel1-anchorpeer-org1
+      name: document-anchorpeer-ktborg
+  - name: document-verifier-anchorpeer-ktborg
     configMap: 
-      name: channel1-anchorpeer-org1
+      name: document-verifier-anchorpeer-ktborg
+  - name: public-key-anchorpeer-ktborg
+    configMap: 
+      name: public-key-anchorpeer-ktborg
   containers:
   - name: util
     image: kcskbcnd93.kcs:5000/hyperledger/fabric-tools:2.2.1
@@ -75,21 +94,21 @@ spec:
         - name: ORDERER_CA_TLS
           value: /crypto/ordererorg/orderers/ordererorg-orderer1/tls/ca.crt
         - name: CORE_PEER_ADDRESS
-          value: org1-peer1:7051
+          value: ktborg-peer1:7051
         - name: CORE_PEER_TLS_ENABLED
           value: "true"
         - name: CORE_PEER_TLS_CERT_FILE
-          value: /crypto/org1/peers/org1-peer1/tls/server.crt
+          value: /crypto/ktborg/peers/ktborg-peer1/tls/server.crt
         - name: CORE_PEER_TLS_KEY_FILE
-          value: /crypto/org1/peers/org1-peer1/tls/server.key
+          value: /crypto/ktborg/peers/ktborg-peer1/tls/server.key
         - name: CORE_PEER_TLS_ROOTCERT_FILE
-          value: /crypto/org1/peers/org1-peer1/tls/ca.crt
+          value: /crypto/ktborg/peers/ktborg-peer1/tls/ca.crt
         - name: CORE_PEER_LOCALMSPID
-          value: Org1MSP
+          value: KTBOrgMSP
         - name: FABRIC_LOGGING_SPEC
           value: info
         - name: CORE_PEER_MSPCONFIGPATH
-          value: /crypto/org1/users/Admin@org1/msp
+          value: /crypto/ktborg/users/Admin@ktborg/msp
         - name: FABRIC_CFG_PATH
           value: /etc/hyperledger/fabric
     resources:
@@ -97,14 +116,17 @@ spec:
         memory: "128Mi"
         cpu: "100m"
     volumeMounts:
-    - mountPath: /crypto/org1/users/Admin@org1/msp
-      name: admin-org1
+    - mountPath: /crypto/ktborg/users/Admin@ktborg/msp
+      name: admin-ktborg
       readOnly: true
     - mountPath: /crypto/ordererorg/users/Admin@ordererorg/msp
       name: admin-ordererorg
       readOnly: true
-    - mountPath: /crypto/org1/peers/org1-peer1/tls
-      name: org1-peer1-tls
+    - mountPath: /crypto/ktborg/peers/ktborg-peer1/tls
+      name: ktborg-peer1-tls
+      readOnly: true
+    - mountPath: /crypto/ktborg/peers/ktborg-peer2/tls
+      name: ktborg-peer2-tls
       readOnly: true
     - mountPath: /crypto/ordererorg/orderers/ordererorg-orderer1/tls
       name: ordererorg-orderer1-tls
@@ -115,9 +137,17 @@ spec:
     - mountPath: /crypto/ordererorg/orderers/ordererorg-orderer3/tls
       name: ordererorg-orderer3-tls
       readOnly: true
-    - mountPath: /data
-      name: channel1-genesis
-    - mountPath: /anchorpeers/org1
-      name: channel1-anchorpeer-org1
+    - mountPath: /data-document-genesis-channel
+      name: document-genesis-channel
+    - mountPath: /data-document-verifier-genesis-channel
+      name: document-verifier-genesis-channel
+    - mountPath: /data-public-key-genesis-channel
+      name: public-key-genesis-channel
+    - mountPath: /anchorpeers/ktborg-document
+      name: document-anchorpeer-ktborg
+    - mountPath: /anchorpeers/ktborg-document-verifier
+      name: document-verifier-anchorpeer-ktborg
+    - mountPath: /anchorpeers/ktborg-public-key
+      name: public-key-anchorpeer-ktborg
     - mountPath: /tmp
       name: tmp
