@@ -91,7 +91,7 @@ kubectl wait --for=condition=Ready pod/utility-pod -n ${NAMESPACES} --timeout=30
 echo
 echo "=> Creating CA, Orderer and Peers"
 kubectl apply -f kube/peer
-# kubectl apply -f kube/ca
+kubectl apply -f kube/ca
 kubectl apply -f kube/orderer
 
 # echo ""

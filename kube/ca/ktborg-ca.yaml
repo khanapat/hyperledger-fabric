@@ -2,7 +2,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: org1-ca
+  name: ktborg-ca
   labels:
     app: blockchain
   namespace: dscf
@@ -10,22 +10,22 @@ spec:
   replicas: 1
   selector:
     matchLabels:
-      name: org1-ca
+      name: ktborg-ca
       app: blockchain
   template:
     metadata:
       labels:
-        name: org1-ca
+        name: ktborg-ca
         app: blockchain
     spec:
       volumes:
       - name: data
         emptyDir: {}
         # persistentVolumeClaim:
-        #   claimName: org1-ca-pvc
+        #   claimName: ktborg-ca-pvc
       - name: crypto
         secret:
-          secretName: org1-ca-crypto
+          secretName: ktborg-ca-crypto
       # affinity:
       #   nodeAffinity:
       #     requiredDuringSchedulingIgnoredDuringExecution:
@@ -63,15 +63,15 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: org1-ca
+  name: ktborg-ca
   labels:
     app: blockchain
-    run: org1-ca
+    run: ktborg-ca
   namespace: dscf
 spec:
   type: NodePort
   selector:
-    name: org1-ca
+    name: ktborg-ca
   ports:
   - protocol: TCP
     nodePort: 31354
