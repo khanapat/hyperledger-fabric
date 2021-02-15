@@ -87,6 +87,9 @@ Organizations:
             # encoded in the genesis block in the Application section context
             - Host: ktborg-peer1
               Port: 7051
+            # anchorpeer2
+            - Host: ktborg-peer2
+              Port: 7051
 
 ################################################################################
 #

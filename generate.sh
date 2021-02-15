@@ -7,7 +7,9 @@
 export PATH=${PWD}/bin:${PATH}
 export FABRIC_CFG_PATH=${PWD}
 
-CHANNEL_NAME=channel1
+DOCUMENT_CHANNEL=document
+VERIFIER_CHANNEL=document-verifier
+PUBLICKEY_CHANNEL=public-key
 GENERATED_FOLDER=generated
 
 set -e
@@ -73,7 +75,7 @@ done
 # configtxgen -profile OrdererGenesis -outputBlock orderer.block -channelID testchainid
 # configtxgen -profile Channel -outputCreateChannelTx ${CHANNEL_NAME}.tx -channelID ${CHANNEL_NAME}
 
-# generate genesis block for orderer
+# generate genesis block for orderer || testchainid is System Channel
 echo
 echo "##########################################################"
 echo "################# GENERATE GENESIS BLOCK #################"
@@ -84,16 +86,51 @@ if [ "$?" -ne 0 ]; then
   exit 1
 fi
 
-# # generate channel configuration transaction
-# configtxgen -profile Channel -outputCreateChannelTx ./${GENERATED_FOLDER}/configtx/${CHANNEL_NAME}.tx -channelID $CHANNEL_NAME
+# generate channel configuration transaction
+echo
+echo "##########################################################"
+echo "#################### GENERATE CHANNEL ####################"
+echo "##########################################################"
+echo "- ${DOCUMENT_CHANNEL} CHANNEL"
+configtxgen -profile Channel -outputCreateChannelTx ./${GENERATED_FOLDER}/configtx/${DOCUMENT_CHANNEL}.tx -channelID ${DOCUMENT_CHANNEL}
+if [ "$?" -ne 0 ]; then
+  echo "Failed to generate channel configuration transaction..."
+  exit 1
+fi
+echo "- ${VERIFIER_CHANNEL} CHANNEL"
+configtxgen -profile Channel -outputCreateChannelTx ./${GENERATED_FOLDER}/configtx/${VERIFIER_CHANNEL}.tx -channelID ${VERIFIER_CHANNEL}
+if [ "$?" -ne 0 ]; then
+  echo "Failed to generate channel configuration transaction..."
+  exit 1
+fi
+echo "- ${PUBLICKEY_CHANNEL} CHANNEL"
+configtxgen -profile Channel -outputCreateChannelTx ./${GENERATED_FOLDER}/configtx/${PUBLICKEY_CHANNEL}.tx -channelID ${PUBLICKEY_CHANNEL}
+if [ "$?" -ne 0 ]; then
+  echo "Failed to generate channel configuration transaction..."
+  exit 1
+fi
 
-# configtxgen -profile Channel \
-#     -outputAnchorPeersUpdate ./${GENERATED_FOLDER}/configtx/Org1MSPanchors.tx \
-#     -channelID $CHANNEL_NAME -asOrg Org1MSP
+echo
+echo "##########################################################"
+echo "#################### GENERATE ANCHORS ####################"
+echo "##########################################################"
+echo "- ${DOCUMENT_CHANNEL} CHANNEL"
+configtxgen -profile Channel \
+    -outputAnchorPeersUpdate ./${GENERATED_FOLDER}/configtx/KTBOrgDocumentMSPanchors.tx \
+    -channelID ${DOCUMENT_CHANNEL} -asOrg KTBOrgMSP
+echo "- ${VERIFIER_CHANNEL} CHANNEL"
+configtxgen -profile Channel \
+    -outputAnchorPeersUpdate ./${GENERATED_FOLDER}/configtx/KTBOrgVerifierMSPanchors.tx \
+    -channelID ${VERIFIER_CHANNEL} -asOrg KTBOrgMSP
+echo "- ${PUBLICKEY_CHANNEL} CHANNEL"
+configtxgen -profile Channel \
+    -outputAnchorPeersUpdate ./${GENERATED_FOLDER}/configtx/KTBOrgPublicKeyMSPanchors.tx \
+    -channelID ${PUBLICKEY_CHANNEL} -asOrg KTBOrgMSP
+
 
 # # configtxgen -profile Channel \
 # #     -outputAnchorPeersUpdate ./${GENERATED_FOLDER}/configtx/Org2MSPanchors.tx \
-# #     -channelID $CHANNEL_NAME -asOrg Org2MSP
+# #     -channelID ${CHANNEL_NAME} -asOrg Org2MSP
 
 # mv crypto-config ./${GENERATED_FOLDER}/
 
