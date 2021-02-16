@@ -130,4 +130,6 @@ kubectl delete -f kube/monitoring.yaml
 ```
 
 <!-- แก้เรื่อง checksum mismatch ตอน go mod vendor -->
+go clean --modcache
+go mod vendor
 export GOPROXY="proxy.golang.org,direct"

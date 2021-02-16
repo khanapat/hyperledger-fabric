@@ -41,18 +41,19 @@ done
 
 set -- "${POSITIONAL[@]}" # restore positional parameters
 
-# if [ "${UPGRADE}" == "true" ]; then
-#   echo ""
-#   echo "=> RUN_CHAINCODE: Checking for current sequence of ${CHAINCODE_NAME}"
-#   kubectl exec utility-pod -n ${NAMESPACES} \
-#    -- sh -c 'CORE_PEER_LOCALMSPID=KTBOrgMSP
-#    CORE_PEER_MSPCONFIGPATH=/crypto/ktborg/users/Admin@ktborg/msp
-#    peer lifecycle chaincode querycommitted -o ordererorg-orderer1:7050 --tls --cafile /crypto/ordererorg/orderers/ordererorg-orderer1/tls/ca.crt -C ${CHANNEL_NAME} -n ${CHAINCODE_NAME} --output json | jq -r .sequence > /tmp/current_sequence.txt && cat /tmp/current_sequence.txt'
-#   kubectl exec utility-pod -n ${NAMESPACES} -- sh -c 'SEQ=$(cat /tmp/current_sequence.txt) && NEXT_SEQ=`expr "$SEQ" + 1` && echo $NEXT_SEQ > /tmp/next_sequence.txt'
-#   rm -f next_sequence.txt
-#   kubectl cp utility-pod:/tmp/next_sequence.txt next_sequence.txt -n ${NAMESPACES}
-#   SEQUENCE=$(cat next_sequence.txt)
-# fi
+if [ "${UPGRADE}" == "true" ]; then
+  echo ""
+  echo "=> RUN_CHAINCODE: Checking for current sequence of ${CHAINCODE_NAME}"
+  kubectl exec utility-pod -n ${NAMESPACES} \
+    -- sh -c "CORE_PEER_LOCALMSPID=KTBOrgMSP
+    CORE_PEER_MSPCONFIGPATH=/crypto/ktborg/users/Admin@ktborg/msp
+    peer lifecycle chaincode querycommitted -o ordererorg-orderer1:7050 --tls --cafile /crypto/ordererorg/orderers/ordererorg-orderer1/tls/ca.crt -C ${CHANNEL_NAME} -n ${CHAINCODE_NAME} --output json | jq -r .sequence > /tmp/current_sequence.txt && cat /tmp/current_sequence.txt"
+  kubectl exec utility-pod -n ${NAMESPACES} \
+    -- sh -c 'SEQ=$(cat /tmp/current_sequence.txt) && NEXT_SEQ=`expr "$SEQ" + 1` && echo $NEXT_SEQ > /tmp/next_sequence.txt'
+  rm -f next_sequence.txt
+  kubectl cp utility-pod:/tmp/next_sequence.txt next_sequence.txt -n ${NAMESPACES}
+  SEQUENCE=$(cat next_sequence.txt)
+fi
 
 echo "=> RUN_CHAINCODE: Channel: ${CHANNEL_NAME} -- Name: ${CHAINCODE_NAME} -- Version: ${CHAINCODE_VERSION} -- Sequence -- ${SEQUENCE}"
 

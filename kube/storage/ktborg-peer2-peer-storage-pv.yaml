@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: ktborg-peer2-peer-dscf-pv
+spec:
+  capacity:
+    storage: 1Gi
+  accessModes:
+    - ReadWriteMany
+  mountOptions:
+    - hard
+    - nfsvers=4.0
+  nfs:
+    server: 10.9.211.10
+    path: "/NMOF/dscf/network/ktborg/peer2"
