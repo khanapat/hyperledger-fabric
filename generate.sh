@@ -138,4 +138,4 @@ rm -f .env
 
 echo "GENERATED_FOLDER=${GENERATED_FOLDER}" >> .env
 echo "COMPOSE_PROJECT_NAME=net" >> .env
-echo "ROOT_FOLDER=$(PWD)" >> .env
+echo "ROOT_FOLDER=$(pwd)" >> .env

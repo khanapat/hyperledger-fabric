@@ -121,7 +121,7 @@ sleep 2
 
 echo
 echo "=> Join ${DOCUMENT_CHANNEL} Channel on KTBOrg Peer1"
-kubectl exec utility-pod -n dscf \
+kubectl exec utility-pod -n ${NAMESPACES} \
  -- sh -c 'CORE_PEER_ADDRESS=ktborg-peer1:7051
   CORE_PEER_TLS_ROOTCERT_FILE=/crypto/ktborg/peers/ktborg-peer1/tls/ca.crt
   CHANNEL_NAME=document
@@ -132,7 +132,7 @@ sleep 2
 
 echo
 echo "=> Join ${DOCUMENT_CHANNEL} Channel on KTBOrg Peer2"
-kubectl exec utility-pod -n dscf \
+kubectl exec utility-pod -n ${NAMESPACES} \
  -- sh -c 'CORE_PEER_ADDRESS=ktborg-peer2:7051
   CORE_PEER_TLS_ROOTCERT_FILE=/crypto/ktborg/peers/ktborg-peer2/tls/ca.crt
   CHANNEL_NAME=document
@@ -143,7 +143,7 @@ sleep 2
 
 echo
 echo "=> Update Anchor Peer for KTBOrgMSP"
-kubectl exec utility-pod -n dscf \
+kubectl exec utility-pod -n ${NAMESPACES} \
  -- sh -c 'CORE_PEER_ADDRESS=ktborg-peer1:7051
   CORE_PEER_TLS_ROOTCERT_FILE=/crypto/ktborg/peers/ktborg-peer1/tls/ca.crt
   CHANNEL_NAME=document
@@ -171,7 +171,7 @@ sleep 2
 
 echo
 echo "=> Join ${VERIFIER_CHANNEL} Channel on KTBOrg Peer1"
-kubectl exec utility-pod -n dscf \
+kubectl exec utility-pod -n ${NAMESPACES} \
  -- sh -c 'CORE_PEER_ADDRESS=ktborg-peer1:7051
   CORE_PEER_TLS_ROOTCERT_FILE=/crypto/ktborg/peers/ktborg-peer1/tls/ca.crt
   CHANNEL_NAME=document-verifier
@@ -182,7 +182,7 @@ sleep 2
 
 echo
 echo "=> Join ${VERIFIER_CHANNEL} Channel on KTBOrg Peer2"
-kubectl exec utility-pod -n dscf \
+kubectl exec utility-pod -n ${NAMESPACES} \
  -- sh -c 'CORE_PEER_ADDRESS=ktborg-peer2:7051
   CORE_PEER_TLS_ROOTCERT_FILE=/crypto/ktborg/peers/ktborg-peer2/tls/ca.crt
   CHANNEL_NAME=document-verifier
@@ -193,7 +193,7 @@ sleep 2
 
 echo
 echo "=> Update Anchor Peer for KTBOrgMSP"
-kubectl exec utility-pod -n dscf \
+kubectl exec utility-pod -n ${NAMESPACES} \
  -- sh -c 'CORE_PEER_ADDRESS=ktborg-peer1:7051
   CORE_PEER_TLS_ROOTCERT_FILE=/crypto/ktborg/peers/ktborg-peer1/tls/ca.crt
   CHANNEL_NAME=document-verifier
@@ -221,7 +221,7 @@ sleep 2
 
 echo
 echo "=> Join ${PUBLICKEY_CHANNEL} Channel on KTBOrg Peer1"
-kubectl exec utility-pod -n dscf \
+kubectl exec utility-pod -n ${NAMESPACES} \
  -- sh -c 'CORE_PEER_ADDRESS=ktborg-peer1:7051
   CORE_PEER_TLS_ROOTCERT_FILE=/crypto/ktborg/peers/ktborg-peer1/tls/ca.crt
   CHANNEL_NAME=public-key
@@ -232,7 +232,7 @@ sleep 2
 
 echo
 echo "=> Join ${PUBLICKEY_CHANNEL} Channel on KTBOrg Peer2"
-kubectl exec utility-pod -n dscf \
+kubectl exec utility-pod -n ${NAMESPACES} \
  -- sh -c 'CORE_PEER_ADDRESS=ktborg-peer2:7051
   CORE_PEER_TLS_ROOTCERT_FILE=/crypto/ktborg/peers/ktborg-peer2/tls/ca.crt
   CHANNEL_NAME=public-key
@@ -243,7 +243,7 @@ sleep 2
 
 echo
 echo "=> Update Anchor Peer for KTBOrgMSP"
-kubectl exec utility-pod -n dscf \
+kubectl exec utility-pod -n ${NAMESPACES} \
  -- sh -c 'CORE_PEER_ADDRESS=ktborg-peer1:7051
   CORE_PEER_TLS_ROOTCERT_FILE=/crypto/ktborg/peers/ktborg-peer1/tls/ca.crt
   CHANNEL_NAME=public-key
