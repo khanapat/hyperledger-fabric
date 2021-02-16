@@ -20,9 +20,9 @@ spec:
     spec:
       volumes:
       - name: data
-        emptyDir: {}
-        # persistentVolumeClaim:
-        #   claimName: ktborg-ca-pvc
+        # emptyDir: {}
+        persistentVolumeClaim:
+          claimName: ktborg-ca-dscf-pvc
       - name: crypto
         secret:
           secretName: ktborg-ca-crypto

@@ -20,9 +20,9 @@ spec:
     spec:
       volumes:
       - name: peer-data
-        emptyDir: {}
-        # persistentVolumeClaim:
-        #   claimName: org1-peer2-peer-pvc
+        # emptyDir: {}
+        persistentVolumeClaim:
+          claimName: ktborg-peer2-peer-dscf-pvc
       - name: peer-couchdb
         emptyDir: {}
         # persistentVolumeClaim:
@@ -68,23 +68,23 @@ spec:
         - name: ORDERER_URL
           value: ordererorg-orderer1:7050
         ports:
-         - containerPort: 7051
-           protocol: TCP
-         - containerPort: 7052
-           protocol: TCP
-         - containerPort: 9443
-           protocol: TCP
+        - containerPort: 7051
+          protocol: TCP
+        - containerPort: 7052
+          protocol: TCP
+        - containerPort: 9443
+          protocol: TCP
         volumeMounts:
-         - mountPath: /var/hyperledger/production
-           name: peer-data
-         - mountPath: /etc/hyperledger/fabric/
-           name: core
-         - mountPath: /crypto/msp/
-           name: msp
-           readOnly: true
-         - mountPath: /crypto/tls/
-           name: tls
-           readOnly: true
+        - mountPath: /var/hyperledger/production
+          name: peer-data
+        - mountPath: /etc/hyperledger/fabric/
+          name: core
+        - mountPath: /crypto/msp/
+          name: msp
+          readOnly: true
+        - mountPath: /crypto/tls/
+          name: tls
+          readOnly: true
         readinessProbe:
           httpGet:
             path: /healthz
@@ -96,11 +96,11 @@ spec:
       - name: dind
         image: kcskbcnd93.kcs:5000/hyperledger/docker:18.09.7-dind
         env:
-         - name: LICENSE
-           value: accept
+        - name: LICENSE
+          value: accept
         ports:
-         - containerPort: 2375
-           protocol: TCP
+        - containerPort: 2375
+          protocol: TCP
         securityContext:
           privileged: true
           readOnlyRootFilesystem: false

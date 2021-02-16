@@ -19,9 +19,9 @@ spec:
     spec:
       volumes:
       - name: orderer-data
-        emptyDir: {}
-        # persistentVolumeClaim:
-        #   claimName: orderer3-pvc
+        # emptyDir: {}
+        persistentVolumeClaim:
+          claimName: orderer3-dscf-pvc
       - name: msp
         secret:
           secretName: ordererorg-orderer3-ca-crypto
