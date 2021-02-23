@@ -18,7 +18,7 @@ function json_ccp {
 ORG=1
 P0PORT=7051
 CAPORT=7054
-PEERPEM=generated/crypto-config/peerOrganizations/org1/tlsca/tlsorg1ca-cert.pem
-CAPEM=generated/crypto-config/peerOrganizations/org1/ca/org1ca-cert.pem
+PEERPEM=generated/crypto-config/peerOrganizations/ktborg/tlsca/tlsktborgca-cert.pem
+CAPEM=generated/crypto-config/peerOrganizations/ktborg/ca/ktborgca-cert.pem
 
 echo "$(json_ccp $ORG $P0PORT $CAPORT $PEERPEM $CAPEM)" > connection-org1.json

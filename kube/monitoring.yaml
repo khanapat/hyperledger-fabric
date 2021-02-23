@@ -96,7 +96,7 @@ spec:
     protocol: TCP
     port: 9090
     targetPort: 9090
-    nodePort: 30882
+    nodePort: 30880
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -118,7 +118,7 @@ spec:
       serviceAccountName: prometheus
       containers:
       - name: prom
-        image: prom/prometheus:v2.20.1
+        image: kcskbcnd93.kcs:5000/hyperledger/prom/prometheus:v2.20.1
         command: ["prometheus"]
         args: ["--config.file=/etc/prometheus/prometheus.yaml", "--web.enable-admin-api", "--web.enable-lifecycle"]
         volumeMounts:
@@ -150,7 +150,7 @@ spec:
         name: grafana
     spec:
       containers:
-        - image: grafana/grafana:6.4.1
+        - image: kcskbcnd93.kcs:5000/hyperledger/grafana/grafana:6.4.1
           name: grafana
           ports:
             - containerPort: 3000
